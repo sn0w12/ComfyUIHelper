@@ -512,3 +512,99 @@ export class UiHelper {
         });
     }
 }
+
+export class Logger {
+    /**
+     * Creates a new Logger instance.
+     * @example
+     * const l = new Logger();
+     * @param {*} prefix
+     */
+    constructor(prefix) {
+        this.prefix = prefix;
+    }
+
+    #getLuminance(hexColor) {
+        // Convert hex to RGB
+        const rgb = parseInt(hexColor.slice(1), 16); // Remove "#" and convert to integer
+        const r = (rgb >> 16) & 0xff;
+        const g = (rgb >> 8) & 0xff;
+        const b = (rgb >> 0) & 0xff;
+
+        // Convert RGB to relative luminance
+        const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+        return luminance;
+    }
+
+    // Function to choose black or white text color based on luminance
+    #getTextColorBasedOnBg(bgColor) {
+        const luminance = this.#getLuminance(bgColor);
+        return luminance > 0.5 ? '#000000' : '#FFFFFF'; // Black text for bright bg, white text for dark bg
+    }
+
+    static #logColors = {
+        "info": "#3b82f6",
+        "warning": "#c19c00",
+        "error": "#c50f1f",
+    }
+
+    static #categoryColors = {
+        "api": "#c19c00",
+        "node": "#c19c00",
+        "setting": "#eab308",
+    }
+
+    static LogTypes = {
+        INFO: "info",
+        WARNING: "warning",
+        ERROR: "error",
+    }
+    LT = Logger.LogTypes;
+
+    static LogCategories = {
+        API: "api",
+        NODE: "node",
+        SETTING: "setting",
+    }
+    LC = Logger.LogCategories;
+
+    /**
+     * Log to the console.
+     * @param {*} message
+     * @param {LogTypes} type
+     * @param {LogCategories} category
+     * @param {*} detailMessage
+     * @example
+     * logger.log("example", logger.LT.INFO, logger.LC.SETTING, "detailed example");
+     */
+    log(message, type, category = "", detailMessage = "") {
+        const logLevel = type.toLowerCase();
+
+        const generalCss = 'color: white; padding: 2px 6px 2px 4px; font-weight: lighter;'
+        let customCSS = generalCss + ' border-radius: 3px;';
+
+        const typeColor = Logger.#logColors[logLevel] || "#881798";
+        const categoryColor = Logger.#categoryColors[category.toLowerCase()] || "#13a10e"
+        const textColor = this.#getTextColorBasedOnBg(typeColor);
+        customCSS += `color: ${textColor};`;
+
+        const categoryCSS = category ? `background-color: ${categoryColor}; color: ${this.#getTextColorBasedOnBg(categoryColor)}; border-radius: 0 3px 3px 0; margin-left: -5px;` : '';
+        const logMessage = category
+            ? [`%c${this.prefix}%c${category}`, `${customCSS.replace("6px", "10px")} background-color: ${typeColor};`, `${generalCss} ${categoryCSS}`, message] // Category
+            : [`%c${this.prefix}`, `${customCSS} background-color: ${typeColor};`, message]; // No Category
+
+        console.groupCollapsed(...logMessage);
+        if (detailMessage != "") {
+            console.log(detailMessage);
+        }
+        const logSettings = {
+            type: type,
+            typeColor: typeColor,
+            category: category,
+            categoryColor: categoryColor,
+        }
+        console.log(logSettings)
+        console.trace();
+        console.groupEnd();
+    }
+}
