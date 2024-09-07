@@ -119,6 +119,14 @@ You can retrieve a setting using the `getSetting()` method:
 const setting = await settingsHelper.getSetting("Boolean");
 ```
 
+## Setting Settings
+
+You can set a setting with the `setSetting()` method:
+
+```js
+settingsHelper.setSetting("Boolean", true);
+```
+
 # UI Helper
 
 ## Wait for ComfyUI to Load

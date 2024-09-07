@@ -328,6 +328,19 @@ export class SettingsHelper {
     }
 
     /**
+     * Sets the value of a setting.
+     * @param {string} name - The name of the setting to set.
+     * @param {*} value - The value of the setting.
+     */
+    setSetting(name, value) {
+        // If name is a setting use the name, otherwise get the id from the generate function.
+        if (this.defaultSettings[name] == undefined) {
+            name = this.#generateId(name);
+        }
+        api.storeSetting(name, value);
+    }
+
+    /**
      * Retrieves the value of multiple settings using `getSetting()`.
      * @param {Array} settingsArray - A string array of setting names/ ids to retrieve.
      * @returns {Promise<*>} The value of the setting.
