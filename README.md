@@ -11,7 +11,7 @@ This project provides a helper class `SettingsHelper` and `UiHelper` to streamli
 ## Installation
 Either download the latest [release](https://github.com/sn0w12/ComfyUIHelper/releases/latest) or clone the repository.
 
-```javascript
+```js
 import { SettingsHelper, UiHelper } from "./SettingsHelper.js";
 ```
 
@@ -19,7 +19,7 @@ import { SettingsHelper, UiHelper } from "./SettingsHelper.js";
 
 ## Initializing SettingsHelper and UiHelper
 
-```javascript
+```js
 const settingsHelper = new SettingsHelper("example");
 const uiHelper = new UiHelper();
 ```
@@ -30,7 +30,7 @@ You can define a dict of settings and pass it to the `addSetting()` method. The 
 
 Here’s an example:
 
-```javascript
+```js
 settingsHelper.addSetting({
     name: "Boolean",
     category: ["Example", "Example", "Boolean"],
@@ -41,8 +41,9 @@ settingsHelper.addSetting({
 });
 ```
 
-Use settingsHelper.SettingsType to get a list of all usable types:
-```javascript
+Use `settingsHelper.SettingsType` to get a list of all usable types:
+
+```js
 BOOLEAN(),
 NUMBER(),
 SLIDER(min, max, step),
@@ -56,7 +57,7 @@ HIDDEN(),
 
 If you use the `settingsHelper.PresetOnChange.reloadSettings()` or manually send an event to `{prefix}.reloadSettings` you can use the `addReloadSettingsListener()` to run a function when a change is made:
 
-```javascript
+```js
 function onSettingsReload(event) {
     console.log(event);
 }
@@ -67,7 +68,7 @@ settingsHelper.addReloadSettingsListener(onSettingsReload);
 
 You can also send information with the `reloadSettings()`:
 
-```javascript
+```js
 const setting = {
     name: "Boolean",
     category: ["Example", "Example", "Boolean"],
@@ -82,18 +83,36 @@ settingsHelper.addSetting(setting);
 
 This can then be gotten by the listener:
 
-```javascript
+```js
 function onSettingsReload(event) {
     console.log(event.detail);
 }
 settingsHelper.addReloadSettingsListener(onSettingsReload);
 ```
 
+> <details>
+>    <summary><i>Log</i></summary>
+>
+>   ```json
+>   {
+>       "name": "Boolean",
+>       "category": [
+>           "Example",
+>           "Example",
+>           "Boolean"
+>       ],
+>       "defaultValue": true,
+>       "tooltip": "This is a boolean setting",
+>       "id": "example.boolean",
+>       "eventSrc": "individual"
+>   }
+
+
 ## Getting Settings
 
 You can retrieve a setting using the `getSetting()` method:
 
-```javascript
+```js
 const setting = await settingsHelper.getSetting("Boolean");
 ```
 
@@ -103,7 +122,7 @@ const setting = await settingsHelper.getSetting("Boolean");
 
 You can also use `UiHelper` to wait for ComfyUI to load:
 
-```javascript
+```js
 await uiHelper.waitForComfy();
 ```
 
@@ -111,11 +130,20 @@ await uiHelper.waitForComfy();
 
 Use `UiHelper` to display a popup notification (toast) in ComfyUI:
 
-```javascript
+```js
 uiHelper.addToast(
     uiHelper.Severity.WARNING,
     "Settings",
     "Updated settings.",
     2000 // Display for 2 seconds
 );
+```
+
+Use `uiHelper.Severity` to get a list of all usable severities:
+
+```js
+SUCCESS: "success",
+INFO: "info",
+WARNING: "warn",
+ERROR: "error",
 ```
