@@ -425,12 +425,17 @@ export class SettingsHelper {
 }
 
 export class UiHelper {
+    /**
+     * Creates a new UiHelper instance.
+     * @example
+     * const uiHelper = new UiHelper();
+     */
     constructor() {
         this.comfyLoaded = false;
     }
 
     /**
-     * Wait until ComfyUI is loaded. Useful when using api, will immedeatly return if comy is loaded.
+     * Wait until ComfyUI is loaded. Useful when using api, will immediately return if comfy is loaded.
      * @example
      * await uiHelper.waitForComfy();
      */
@@ -463,7 +468,7 @@ export class UiHelper {
     }
 
     /**
-     * Create a popup in the top right. If you dont include life it will stay until the user removes it.
+     * Create a popup in the top right. If you don't include life it will stay until the user removes it.
      * @param {Severity} severity - Severity of the popup, use `uiHelper.Severity`.
      * @param {string} title - Title of the popup.
      * @param {*} detail - Detailed message.
