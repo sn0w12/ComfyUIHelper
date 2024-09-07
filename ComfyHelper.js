@@ -205,7 +205,7 @@ export class SettingsHelper {
      *   category: ['Example', 'Visual', 'Dark Mode'],
      *   type: settingsHelper.SettingsType.BOOLEAN,
      *   defaultValue: false,
-     *   onChange: (value) => {
+     *   onChange: () => {
      *     console.log("Dark Mode changed:", value);
      *   },
      *   tooltip: "Toggle dark mode for the UI."
@@ -224,7 +224,7 @@ export class SettingsHelper {
      *   type: settingsHelper.SettingsType.COMBO,
      *   defaultValue: "Light",
      *   options: settingsHelper.createSettingOptions({ text: "Light", value: "light" }, "Dark"),
-     *   onChange: (value) => {
+     *   onChange: () => {
      *     console.log("Theme changed:", value);
      *   },
      *   tooltip: "Choose a UI theme."
