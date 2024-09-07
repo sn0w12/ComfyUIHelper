@@ -5,7 +5,7 @@ This project provides a helper class `SettingsHelper` and `UiHelper` to streamli
 ## Features
 - Easily add and manage settings for ComfyUI.
 - Settings can be of type `BOOLEAN`, `NUMBER`, `SLIDER`, `COMBO`, `TEXT`, `MULTILINE`, or `HIDDEN`.
-- Automatically triggers events when settings are changed.
+- Easily triggers events when settings are changed.
 - Provides debounced event handling.
 
 ![Settings](https://i.imgur.com/RqoMTvf.png)
