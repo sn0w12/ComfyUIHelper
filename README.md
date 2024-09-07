@@ -8,6 +8,8 @@ This project provides a helper class `SettingsHelper` and `UiHelper` to streamli
 - Automatically triggers events when settings are changed.
 - Provides debounced event handling.
 
+![Settings](https://i.imgur.com/RqoMTvf.png)
+
 ## Installation
 Either download the latest [release](https://github.com/sn0w12/ComfyUIHelper/releases/latest) or clone the repository.
 
