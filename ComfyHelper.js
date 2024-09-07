@@ -129,7 +129,7 @@ export class SettingsHelper {
     PresetOnChange = {
         /**
          * Sends out a custom event called {prefix}.reloadSettings. This function is debounced. If the setting id is passed along
-         * in the details like this: `details.id` it will be handled seperately from other settings.
+         * in the details like this: `details.id` it will be handled separately from other settings.
          * @example
          * // You can create a listener like this:
          * function onSettingsReload() {
