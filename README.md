@@ -222,10 +222,3 @@ const settings = await settingsHelper.getMultipleSettings(["Boolean", "Number", 
 ```
 </details>
 
-<details>
-    <summary>Examples</summary>
-
-```js
-```
-</details>
-
