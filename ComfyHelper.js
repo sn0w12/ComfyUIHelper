@@ -65,6 +65,15 @@ class CustomSettingTypes {
  */
 export class SettingsHelper {
     /**
+     * A dictionary of all settings added with the `SettingsHelper`.
+     */
+    static defaultSettings = {};
+
+    getDefaultSettings() {
+        return SettingsHelper.defaultSettings;
+    }
+
+    /**
      * Creates a new SettingsHelper instance.
      * @param {string} prefix - The prefix to use for all settings.
      * @example
@@ -87,7 +96,8 @@ export class SettingsHelper {
         }, 250);
 
         this.debouncedEvents = {};
-        this.defaultSettings = {};
+
+        this.uiHelper = new UiHelper();
     }
 
     /**
@@ -239,7 +249,7 @@ export class SettingsHelper {
             // Check if 'type' is a function, and only call it if it is
             ...(typeof settingDict.type === 'function' ? settingDict.type() : settingDict.type),
         };
-        this.defaultSettings[settingDict.id] = settingDict.defaultValue;
+        SettingsHelper.defaultSettings[settingDict.id] = settingDict.defaultValue;
         this.#registerSetting(settingDefinition);
     }
 
@@ -284,7 +294,7 @@ export class SettingsHelper {
 
     async #fetchSetting(name) {
         // If name is a setting use the name, otherwise get the id from the generate function.
-        if (this.defaultSettings[name] == undefined) {
+        if (SettingsHelper.defaultSettings[name] == undefined) {
             name = this.#generateId(name);
         }
         const settingUrl = "/settings/" + name;
@@ -311,9 +321,10 @@ export class SettingsHelper {
      * @returns {Promise<*>} The value of the setting.
      */
     async getSetting(name) {
+        await this.uiHelper.waitForComfy();
         const response = await this.#fetchSetting(name);
         if (response == null) {
-            return this.defaultSettings[name];
+            return SettingsHelper.defaultSettings[name];
         }
         return response;
     }
@@ -334,7 +345,7 @@ export class SettingsHelper {
      */
     setSetting(name, value) {
         // If name is a setting use the name, otherwise get the id from the generate function.
-        if (this.defaultSettings[name] == undefined) {
+        if (SettingsHelper.defaultSettings[name] == undefined) {
             name = this.#generateId(name);
         }
         api.storeSetting(name, value);
