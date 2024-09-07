@@ -18,7 +18,7 @@ Either download the latest [release](https://github.com/sn0w12/ComfyUIHelper/rel
 ## Initializing SettingsHelper and UiHelper
 
 ```js
-import { SettingsHelper, UiHelper } from "./SettingsHelper.js";
+import { SettingsHelper, UiHelper } from "./ComfyUIHelper/ComfyHelper.js";
 
 const settingsHelper = new SettingsHelper("example");
 const uiHelper = new UiHelper();
