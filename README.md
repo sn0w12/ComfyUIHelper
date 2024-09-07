@@ -7,7 +7,6 @@ This project provides a helper class `SettingsHelper` and `UiHelper` to streamli
 - Settings can be of type `BOOLEAN`, `NUMBER`, `SLIDER`, `COMBO`, `TEXT`, `MULTILINE`, or `HIDDEN`.
 - Automatically triggers events when settings are changed.
 - Provides debounced event handling.
-- Simple API for creating UI popups, sidebars, and managing async app state.
 
 ## Installation
 Either download the latest [release](https://github.com/sn0w12/ComfyUIHelper/releases/latest) or clone the repository.
