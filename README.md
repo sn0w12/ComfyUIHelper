@@ -27,7 +27,7 @@ const uiHelper = new UiHelper();
 
 ## Adding Settings
 
-You can define a dict of settings and pass it to the `addSetting()` method. The setting must define properties such as `name`, `category`, `defaultValue`, `type`, and an optional `tooltip` and `onChange` handler.
+You can define a dict of settings and pass it to the `addSetting()` method. The setting must define properties such as `name`, `category`, `defaultValue`, `type`, and an optional `tooltip` and `onChange` handler. The function automatically generates the settings id.
 
 The category is built like this: `[Main Name, Category Name, Setting Name]`. `Main Name` is the name seen on the left and is often the name of your extension, `Category Name` is the category the the setting is sorted into and `Setting Name` is not seen.
 
@@ -44,6 +44,8 @@ settingsHelper.addSetting({
 });
 ```
 
+The examples id would be `example.boolean`, where `example` is the prefix we provide when we create the `SettingsHelper` and boolean is the slugified `name`.
+
 Use `settingsHelper.SettingsType` to get a list of all usable types:
 
 ```js
@@ -54,6 +56,14 @@ COMBO(...options),
 TEXT(),
 MULTILINE(), // Multiline is not an official setting type.
 HIDDEN(),
+```
+
+### Setting id
+
+Since the helper assigns the id of the setting automatically (if you don't provide one) it might be a little unclear what a settings id is. You can use the `getSettingId()` function to get the id of a setting if you pass the name you gave the setting.
+
+```js
+settingsHelper.getSettingId("Boolean");
 ```
 
 ## Listening for Setting Changes
@@ -120,6 +130,19 @@ You can retrieve a setting using the `getSetting()` method:
 const setting = await settingsHelper.getSetting("Boolean");
 ```
 
+You can get multiple settings using the `getMultipleSettings()` method:
+
+```js
+const settings = await settingsHelper.getMultipleSettings("Boolean", "example.boolean");
+```
+
+You can get all ComfyUI settings if you use the `getAllSettings()` method. This returns a map of all settings and their current value, this map is also stored in `SettingsHelper.allSettings`.
+
+```js
+const allSettings = await settingsHelper.getAllSettings();
+const allSettings = SettingsHelper.allSettings; // cached settings.
+```
+
 ## Setting Settings
 
 You can set a setting with the `setSetting()` method:
@@ -132,7 +155,7 @@ settingsHelper.setSetting("Boolean", true);
 
 ## Wait for ComfyUI to Load
 
-You can also use `UiHelper` to wait for ComfyUI to load:
+You can use `UiHelper` to wait for ComfyUI to load:
 
 ```js
 await uiHelper.waitForComfy();
@@ -222,14 +245,6 @@ const settingsDefinitions = [
     },
 ]
 settingsHelper.addSettings(settingsDefinitions);
-```
-</details>
-
-<details>
-    <summary>Getting Several Settings</summary>
-
-```js
-const settings = await settingsHelper.getMultipleSettings(["Boolean", "Number", "Combo", "Text", "Multiline", "Slider"]);
 ```
 </details>
 

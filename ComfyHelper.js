@@ -74,6 +74,11 @@ export class SettingsHelper {
     }
 
     /**
+     * All ComfyUI settings.
+     */
+    static allSettings;
+
+    /**
      * Creates a new SettingsHelper instance.
      * @param {string} prefix - The prefix to use for all settings.
      * @example
@@ -98,6 +103,13 @@ export class SettingsHelper {
         this.debouncedEvents = {};
 
         this.uiHelper = new UiHelper();
+        this.#initialize();
+    }
+
+    async #initialize() {
+        if (!SettingsHelper.allSettings) {
+            SettingsHelper.allSettings = await this.getAllSettings();
+        }
     }
 
     /**
@@ -292,27 +304,43 @@ export class SettingsHelper {
         );
     }
 
-    async #fetchSetting(name) {
-        // If name is a setting use the name, otherwise get the id from the generate function.
-        if (SettingsHelper.defaultSettings[name] == undefined) {
-            name = this.#generateId(name);
-        }
-        const settingUrl = "/settings/" + name;
+    async #fetchApi(route, options = {}) {
+		if (!options.headers) {
+			options.headers = {};
+		}
+
+        options.cache = 'no-store';
+
         try {
-            const response = await fetch(settingUrl);
+            const response = await fetch(route, options);
             if (!response.ok) {
                 return null;
             }
             const data = await response.json();
-            if (data == null) {
-                return null;
-            }
-
             return data;
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error);
             return null;
         }
+    }
+
+    async #fetchSetting(name) {
+        const settingUrl = "/settings/" + name;
+        const data = await this.#fetchApi(settingUrl);
+        return data;
+    }
+
+    /**
+     * Returns the id of a setting.
+     * @param {string} name
+     * @returns
+     */
+    getSettingId(name) {
+        if (SettingsHelper.defaultSettings[name] == undefined && !SettingsHelper.allSettings.hasOwnProperty(name)) {
+            name = this.#generateId(name);
+        }
+
+        return name;
     }
 
     /**
@@ -322,6 +350,7 @@ export class SettingsHelper {
      */
     async getSetting(name) {
         await this.uiHelper.waitForComfy();
+        name = this.getSettingId(name);
         const response = await this.#fetchSetting(name);
         if (response == null) {
             return SettingsHelper.defaultSettings[name];
@@ -352,28 +381,34 @@ export class SettingsHelper {
     }
 
     /**
-     * Retrieves the value of multiple settings using `getSetting()`.
-     * @param {Array} settingsArray - A string array of setting names/ ids to retrieve.
+     * Retrieves the value of multiple settings.
+     * @param {string} settings - Several settings to retrieve.
      * @returns {Promise<*>} The value of the setting.
      */
-    async getMultipleSettings(settingsArray) {
-        // Create an array of promises using getSetting with the corresponding default values
-        const promises = settingsArray.map(name => this.getSetting(name));
+    async getMultipleSettings(...settings) {
+        const allSettings = await this.getAllSettings();
 
-        try {
-            const results = await Promise.all(promises);
+        const settingsMap = settings.reduce((map, setting) => {
+            const settingName = this.getSettingId(setting);
 
-            // Convert the results to a Map or a plain object where each name is the key
-            const settingsMap = {};
-            settingsArray.forEach((name, index) => {
-                settingsMap[name] = results[index];
-            });
+            map[setting] = allSettings[settingName] !== undefined
+                ? allSettings[settingName]
+                : SettingsHelper.defaultSettings[settingName];
 
-            return settingsMap;
-        } catch (error) {
-            console.error('There was a problem with one of the fetch operations:', error);
-            return null;
-        }
+            return map;
+        }, {});
+
+        return settingsMap;
+    }
+
+    /**
+     * Get all ComfyUI settings.
+     * @returns
+     */
+    async getAllSettings() {
+        const allSettings = await this.#fetchApi("/settings");
+        SettingsHelper.allSettings = allSettings;
+        return allSettings;
     }
 
     /**
