@@ -77,6 +77,7 @@ export class SettingsHelper {
      * All ComfyUI settings.
      */
     static allSettings;
+    static debouncedEvents = {};
 
     /**
      * Creates a new SettingsHelper instance.
@@ -89,7 +90,7 @@ export class SettingsHelper {
             prefix += ".";
         }
         this.prefix = prefix;
-        this.PresetOnChange.reloadSettings = this.PresetOnChange.reloadSettings.bind(this);
+        //SettingsHelper.PresetOnChange.reloadSettings = SettingsHelper.PresetOnChange.reloadSettings.bind(this);
         this.debouncedSendEvent = this.debounce((details) => {
             const event = new CustomEvent(this.prefix + 'reloadSettings', {
                 detail: {
@@ -100,7 +101,7 @@ export class SettingsHelper {
             window.dispatchEvent(event);
         }, 250);
 
-        this.debouncedEvents = {};
+        SettingsHelper.debouncedEvents = {};
 
         this.uiHelper = new UiHelper();
         this.#initialize();
@@ -115,7 +116,7 @@ export class SettingsHelper {
     /**
      * Enum-like object for valid setting types.
      */
-    SettingsType = {
+    static SettingsType = {
         BOOLEAN() {
             return { type: 'boolean' }
         },
@@ -148,7 +149,7 @@ export class SettingsHelper {
     /**
      * A collection of preset onChange functions for common settings use cases.
      */
-    PresetOnChange = {
+    static PresetOnChange = {
         /**
          * Sends out a custom event called {prefix}.reloadSettings. This function is debounced. If the setting id is passed along
          * in the details like this: `details.id` it will be handled separately from other settings.
@@ -164,9 +165,9 @@ export class SettingsHelper {
 
             if (id) {
                 // Check if there's already a debounced function for this id
-                if (!this.debouncedEvents[id]) {
+                if (!SettingsHelper.debouncedEvents[id]) {
                     // Create a debounced function for this id if it doesn't exist
-                    this.debouncedEvents[id] = this.debounce((details) => {
+                    SettingsHelper.debouncedEvents[id] = this.debounce((details) => {
                         const event = new CustomEvent(this.prefix + 'reloadSettings', {
                             detail: {
                                 ...details,
@@ -178,7 +179,7 @@ export class SettingsHelper {
                 }
 
                 // Call the debounced function for this specific id
-                this.debouncedEvents[id](details);
+                SettingsHelper.debouncedEvents[id](details);
             } else {
                 // Fallback to the global debounce if no id is provided
                 this.debouncedSendEvent(details);
@@ -225,7 +226,7 @@ export class SettingsHelper {
      * settingsHelper.addSetting({
      *   name: "Dark Mode",
      *   category: ['Example', 'Visual', 'Dark Mode'],
-     *   type: settingsHelper.SettingsType.BOOLEAN,
+     *   type: SettingsHelper.SettingsType.BOOLEAN,
      *   defaultValue: false,
      *   onChange: () => {
      *     console.log("Dark Mode changed:", value);
@@ -235,7 +236,7 @@ export class SettingsHelper {
      *
      * settingsHelper.addSetting({
      *   name: "Volume",
-     *   type: settingsHelper.SettingsType.SLIDER,
+     *   type: SettingsHelper.SettingsType.SLIDER,
      *   defaultValue: 50,
      *   attrs: { min: 0, max: 100, step: 1 },
      *   tooltip: "Adjust the volume level.",
@@ -243,7 +244,7 @@ export class SettingsHelper {
      *
      * settingsHelper.addSetting({
      *   name: "Theme",
-     *   type: settingsHelper.SettingsType.COMBO,
+     *   type: SettingsHelper.SettingsType.COMBO,
      *   defaultValue: "Light",
      *   options: settingsHelper.createSettingOptions({ text: "Light", value: "light" }, "Dark"),
      *   onChange: () => {
@@ -281,8 +282,8 @@ export class SettingsHelper {
                category: ["Example", "Example", "Boolean"],
                defaultValue: true,
                tooltip: "This is a boolean setting",
-               type: settingsHelper.SettingsType.BOOLEAN,
-               onChange: () => settingsHelper.PresetOnChange.reloadSettings(),
+               type: SettingsHelper.SettingsType.BOOLEAN,
+               onChange: () => SettingsHelper.PresetOnChange.reloadSettings(),
            }
        ];
        settingsHelper.addSettings(settingsDefinitions);
@@ -508,7 +509,7 @@ export class UiHelper {
     /**
      * Enum-like object for valid severity levels.
      */
-    Severity = {
+    static Severity = {
         SUCCESS: "success",
         INFO: "info",
         WARNING: "warn",
@@ -517,7 +518,7 @@ export class UiHelper {
 
     /**
      * Create a popup in the top right. If you don't include life it will stay until the user removes it.
-     * @param {Severity} severity - Severity of the popup, use `uiHelper.Severity`.
+     * @param {Severity} severity - Severity of the popup, use `UiHelper.Severity`.
      * @param {string} title - Title of the popup.
      * @param {*} detail - Detailed message.
      * @param {number} life - Millisecond lifetime of the popup.
@@ -549,6 +550,9 @@ export class UiHelper {
         });
     }
 
+    /**
+     * Enum-like object for preset index functions.
+     */
     static PresetInsertIndex = {
         /**
          * Find the index of a given option string in the menu. The dividers are `null`.

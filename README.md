@@ -39,14 +39,14 @@ settingsHelper.addSetting({
     category: ["Example", "Example", "Boolean"],
     defaultValue: true,
     tooltip: "This is a boolean setting",
-    type: settingsHelper.SettingsType.BOOLEAN,
-    onChange: () => settingsHelper.PresetOnChange.reloadSettings(),
+    type: SettingsHelper.SettingsType.BOOLEAN,
+    onChange: () => SettingsHelper.PresetOnChange.reloadSettings(),
 });
 ```
 
 The examples id would be `example.boolean`, where `example` is the prefix we provide when we create the `SettingsHelper` and boolean is the slugified `name`.
 
-Use `settingsHelper.SettingsType` to get a list of all usable types:
+Use `SettingsHelper.SettingsType` to get a list of all usable types:
 
 ```js
 BOOLEAN(),
@@ -68,7 +68,7 @@ settingsHelper.getSettingId("Boolean");
 
 ## Listening for Setting Changes
 
-If you use the `settingsHelper.PresetOnChange.reloadSettings()` or manually send an event to `{prefix}.reloadSettings` you can use the `addReloadSettingsListener()` to run a function when a change is made:
+If you use the `SettingsHelper.PresetOnChange.reloadSettings()` or manually send an event to `{prefix}.reloadSettings` you can use the `addReloadSettingsListener()` to run a function when a change is made:
 
 ```js
 function onSettingsReload(event) {
@@ -87,8 +87,8 @@ const setting = {
     category: ["Example", "Example", "Boolean"],
     defaultValue: true,
     tooltip: "This is a boolean setting",
-    type: settingsHelper.SettingsType.BOOLEAN,
-    onChange: () => settingsHelper.PresetOnChange.reloadSettings(setting), // Send this setting in the event
+    type: SettingsHelper.SettingsType.BOOLEAN,
+    onChange: () => SettingsHelper.PresetOnChange.reloadSettings(setting), // Send this setting in the event
 };
 
 settingsHelper.addSetting(setting);
@@ -167,14 +167,14 @@ Use `UiHelper` to display a popup notification (toast) in ComfyUI:
 
 ```js
 uiHelper.addToast(
-    uiHelper.Severity.WARNING,
+    UiHelper.Severity.WARNING,
     "Settings",
     "Updated settings.",
     2000 // Display for 2 seconds
 );
 ```
 
-Use `uiHelper.Severity` to get a list of all usable severities:
+Use `UiHelper.Severity` to get a list of all usable severities:
 
 ```js
 SUCCESS: "success",
@@ -195,16 +195,16 @@ const settingsDefinitions = [
         category: ["Example", "Example", "Boolean"],
         defaultValue: true,
         tooltip: "This is a boolean setting",
-        type: settingsHelper.SettingsType.BOOLEAN,
-        onChange: () => settingsHelper.PresetOnChange.reloadSettings(),
+        type: SettingsHelper.SettingsType.BOOLEAN,
+        onChange: () => SettingsHelper.PresetOnChange.reloadSettings(),
     },
     {
         name: "Number",
         category: ["Example", "Example", "Number"],
         defaultValue: 10,
         tooltip: "This is a number setting",
-        type: settingsHelper.SettingsType.NUMBER,
-        onChange: () => settingsHelper.PresetOnChange.reloadSettings(),
+        type: SettingsHelper.SettingsType.NUMBER,
+        onChange: () => SettingsHelper.PresetOnChange.reloadSettings(),
     },
     {
         name: "Combo",
@@ -212,36 +212,36 @@ const settingsDefinitions = [
         defaultValue: "combo1",
         tooltip: "This is a combo setting",
         prefix: "beta",
-        type: settingsHelper.SettingsType.COMBO(
+        type: SettingsHelper.SettingsType.COMBO(
             { text: "Combo 1", value: "combo1" },
             { text: "Combo 2", value: "combo2" },
             { text: "Combo 3", value: "combo3" },
         ),
-        onChange: () => settingsHelper.PresetOnChange.reloadSettings(),
+        onChange: () => SettingsHelper.PresetOnChange.reloadSettings(),
     },
     {
         name: "Text",
         category: ["Example", "Example 2", "Text"],
         defaultValue: "Example",
         tooltip: "This is a text setting",
-        type: settingsHelper.SettingsType.TEXT,
-        onChange: () => settingsHelper.PresetOnChange.reloadSettings(),
+        type: SettingsHelper.SettingsType.TEXT,
+        onChange: () => SettingsHelper.PresetOnChange.reloadSettings(),
     },
     {
         name: "Multiline",
         tooltip: "This is a multiline setting",
         category: ["Example", "Example 2", "Multiline"],
         defaultValue: "Example\nExample\nExample\nExample\nExample\nExample",
-        type: settingsHelper.SettingsType.MULTILINE,
-        onChange: () => settingsHelper.PresetOnChange.reloadSettings(),
+        type: SettingsHelper.SettingsType.MULTILINE,
+        onChange: () => SettingsHelper.PresetOnChange.reloadSettings(),
     },
     {
         name: "Slider",
         category: ["Example", "Example 2", "Slider"],
         defaultValue: 50,
         tooltip: "This is a slider setting",
-        type: settingsHelper.SettingsType.SLIDER(0, 100, 1),
-        onChange: () => settingsHelper.PresetOnChange.reloadSettings(settingsDefinitions[5]), // Send this setting in the event
+        type: SettingsHelper.SettingsType.SLIDER(0, 100, 1),
+        onChange: () => SettingsHelper.PresetOnChange.reloadSettings(settingsDefinitions[5]), // Send this setting in the event
     },
 ]
 settingsHelper.addSettings(settingsDefinitions);
