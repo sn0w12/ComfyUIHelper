@@ -127,7 +127,7 @@ export class SettingsHelper {
             prefix += ".";
         }
         this.prefix = prefix;
-        //SettingsHelper.PresetOnChange.reloadSettings = SettingsHelper.PresetOnChange.reloadSettings.bind(this);
+        SettingsHelper.PresetOnChange.reloadSettings = SettingsHelper.PresetOnChange.reloadSettings.bind(this);
         SettingsHelper.debouncedSendEvent = this.debounce((details) => {
             const event = new CustomEvent(this.prefix + 'reloadSettings', {
                 detail: {
