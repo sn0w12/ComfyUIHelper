@@ -471,6 +471,8 @@ export class SettingsHelper {
 }
 
 export class UiHelper {
+    static contextMenuNames = [];
+
     /**
      * Creates a new UiHelper instance.
      * @example
@@ -545,5 +547,167 @@ export class UiHelper {
             type: type,
             render: render,
         });
+    }
+
+    static PresetInsertIndex = {
+        /**
+         * Find the index of a given option string in the menu. The dividers are `null`.
+         * @param {*} optionContent - The content to search for (can be a string or null).
+         * @param {number} occurrence - The occurrence number to find (default is 1 for the first occurrence).
+         * @returns {function} A function that takes options and returns the index of the matching option.
+         */
+        aboveOption(optionContent, occurrence = 1) {
+            return function (options) {
+                let matchCount = 0;
+
+                // Find the index of the nth occurrence of the option that matches the specified content or is null
+                for (let i = 0; i < options.length; i++) {
+                    const option = options[i];
+
+                    // Case 1: If optionContent is null, look for null options
+                    if (optionContent === null && option === null) {
+                        matchCount++;
+                        if (matchCount === occurrence) {
+                            return i;
+                        }
+                    }
+
+                    // Case 2: If optionContent is a string, compare it with option.content (if option is not null)
+                    if (option && option.content && option.content === optionContent) {
+                        matchCount++;
+                        if (matchCount === occurrence) {
+                            return i;
+                        }
+                    }
+                }
+
+                // If no matching occurrence is found, return -1 (append at the end)
+                return -1;
+            };
+        },
+
+        /**
+         * Find the index just below a given option string in the menu by calling aboveOption.
+         * @param {*} optionContent - The content to search for (can be a string or null).
+         * @param {number} occurrence - The occurrence number to find (default is 1 for the first occurrence).
+         * @returns {function} A function that takes options and returns the index just after the matching option.
+         */
+        underOption(optionContent, occurrence = 1) {
+            return function (options) {
+                const indexAbove = UiHelper.PresetInsertIndex.aboveOption(optionContent, occurrence)(options);
+                // Return the index after the found index, or -1 if no match is found (which appends to the end)
+                return indexAbove !== -1 ? indexAbove + 1 : -1;
+            };
+        },
+
+        /**
+         * Always insert at the end of the menu.
+         * @returns {function} - A function that returns -1.
+         */
+        atEnd() {
+            return function (options) {
+                return -1; // Always return -1 to append at the end
+            };
+        },
+
+        /**
+         * Always insert at the beginning
+         * @returns {function} A function that returns 0.
+         */
+        atStart() {
+            return function (options) {
+                return 0; // Insert at the start (index 0)
+            };
+        }
+    };
+
+    #registerContextMenu(name, nodeType, menuItem, insertIndex) {
+        app.registerExtension({
+            name,
+            async setup() {
+                const original_getNodeMenuOptions = app.canvas.getNodeMenuOptions;
+                app.canvas.getNodeMenuOptions = function (node) {
+                    const options = original_getNodeMenuOptions.apply(this, arguments);
+
+                    if (node.type === nodeType) {
+                        let index = (typeof insertIndex === 'function') ? insertIndex(options, node) : insertIndex;
+
+                        if (index !== -1) {
+                            options.splice(index, 0, menuItem);
+                        } else {
+                            options.push(menuItem);
+                        }
+                    }
+                    return options;
+                };
+            },
+        });
+    }
+
+    /**
+     * Registers a context menu for a specific node type within the app's canvas.
+     *
+     * @param {string} nodeType - The type of node for which the context menu will be applied.
+     * @param {Object} menuItem - The menu item to be added to the context menu. This object can be made with the `createContextMenuItem()` or `createContextMenuGroup()` function.
+     * @param {(number|function)} insertIndex - The index at which the menu item should be inserted.
+     *        If a number is provided, it will be used as the index for insertion.
+     *        If a function is provided, it should return an index based on the current context (e.g., options and node).
+     *        The function signature is `(options: Array, node: Object) => number`. There are several preset functions in `uiHelper.PresetInsertIndex`
+     * @example
+     * const menuItem = uiHelper.createContextMenuItem("example", false, () => console.log("example"));
+     *
+     * uiHelper.registerContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.aboveOption("Title"));
+     * uiHelper.registerContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.underOption(null, 2));
+     */
+    registerContextMenu(nodeType, menuItem, insertIndex) {
+        let baseName = nodeType + ".contextMenu";
+        let name = baseName;
+        let counter = 1;
+
+        // Check if the name already exists in contextMenuNames and append a number if needed
+        while (UiHelper.contextMenuNames.includes(name)) {
+            name = `${baseName}_${counter}`;
+            counter++;
+        }
+
+        // Once a unique name is found, push it into the contextMenuNames array
+        UiHelper.contextMenuNames.push(name);
+
+        // Proceed with registering the context menu
+        this.#registerContextMenu(name, nodeType, menuItem, insertIndex);
+    }
+
+    /**
+     * Creates a context menu item.
+     *
+     * @param {string} content - The label for the context menu item.
+     * @param {boolean} disabled - A boolean indicating whether the menu item is disabled.
+     * @param {function} callback - The function to be executed when the menu item is clicked.
+     * @returns {Object} A context menu item object to be used in the context menu.
+     */
+    createContextMenuItem(content, disabled, callback) {
+        return {
+            content: content,
+            disabled: disabled,
+            callback: callback
+        }
+    }
+
+    /**
+     * Creates a context menu group (submenu).
+     *
+     * @param {string} name - The name of the menu group.
+     * @param {...Object} menuItems - A variable number of context menu items to be included in the group. Can be made with the `createContextMenuItem()` function.
+     * @returns {Object} A context menu group object with the provided items as a submenu.
+     */
+    createContextMenuGroup(name, ...menuItems) {
+        return {
+            content: name,
+            disabled: false,
+            has_submenu: true,
+            submenu:  {
+                options: menuItems
+            }
+        }
     }
 }
