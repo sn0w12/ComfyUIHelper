@@ -238,6 +238,57 @@ class GroupTypes {
         return wrapperDiv;
     }
 
+    static numberSetting(name, setter, value, attrs) {
+        const htmlID = CustomSettingTypes.generateHtmlID(name);
+
+        // Create the wrapper div with the class 'setting-input'
+        const wrapperDiv = $el('div', {
+            className: 'setting-input',
+            style: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: '10px' // Space between slider and number input
+            }
+        });
+
+        // Create the number input wrapper (span) with the appropriate classes
+        const numberWrapper = $el('span', {
+            className: 'p-inputnumber p-component p-inputwrapper p-inputwrapper-filled',  // Add classes for styling
+            id: htmlID,
+            'data-pc-name': 'inputnumber',
+            'data-pc-section': 'root'
+        });
+
+        // Create the number input element with disabled arrows (like a text input)
+        const numberInput = $el('input', {
+            type: 'text',  // Set type to 'text' to match the first example
+            className: 'p-inputtext p-component p-inputnumber-input',
+            role: 'spinbutton',
+            'aria-valuenow': value.toString(),  // Set the initial value as aria-valuenow
+            inputmode: 'numeric',  // Set inputmode to numeric for number-like input behavior
+            value: value.toString(),  // Set the initial value
+            'data-pc-name': 'pcinput',  // Match data attributes from the provided structure
+            'data-pc-extend': 'inputtext',
+            'data-pc-section': 'root',
+            oninput: (e) => {
+                const newValue = parseFloat(e.target.value);
+                if (!isNaN(newValue)) {
+                    setter(newValue);  // Call the setter to update the value
+                    numberInput.setAttribute('aria-valuenow', newValue.toString());  // Update the aria-valuenow
+                }
+            },
+            ...attrs  // Allow for additional attributes (e.g., min, max, step, etc.)
+        });
+
+        // Append the number input to the number wrapper
+        numberWrapper.appendChild(numberInput);
+
+        // Append the wrapper to the main wrapper div
+        wrapperDiv.appendChild(numberWrapper);
+
+        return wrapperDiv;
+    }
 }
 
 class CustomSettingTypes {
@@ -552,7 +603,7 @@ export class SettingsHelper {
             return { type: GroupTypes.booleanSetting }
         },
         NUMBER() {
-            return { type: 'number' }
+            return { type: GroupTypes.numberSetting }
         },
         SLIDER(min, max, step) {
             return {
