@@ -229,7 +229,7 @@ export class SettingsHelper {
      *   type: SettingsHelper.SettingsType.BOOLEAN,
      *   defaultValue: false,
      *   onChange: () => {
-     *     console.log("Dark Mode changed:", value);
+     *     console.log("Dark Mode changed:");
      *   },
      *   tooltip: "Toggle dark mode for the UI."
      * });
@@ -248,7 +248,7 @@ export class SettingsHelper {
      *   defaultValue: "Light",
      *   options: settingsHelper.createSettingOptions({ text: "Light", value: "light" }, "Dark"),
      *   onChange: () => {
-     *     console.log("Theme changed:", value);
+     *     console.log("Theme changed:");
      *   },
      *   tooltip: "Choose a UI theme."
      * });
