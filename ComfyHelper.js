@@ -202,6 +202,42 @@ class GroupTypes {
 
         return wrapperDiv;
     }
+
+    static textSetting(name, setter, value, attrs) {
+        const htmlID = CustomSettingTypes.generateHtmlID(name);
+
+        // Create the wrapper div with the class 'setting-input'
+        const wrapperDiv = $el('div', {
+            className: 'setting-input',
+            style: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '10px' // Space between slider and number input
+            }
+        });
+
+        // Create the text input element
+        const textInput = $el('input', {
+            type: 'text',
+            id: htmlID,
+            className: 'p-inputtext p-component p-filled',  // Add necessary classes
+            'data-pc-name': 'inputtext',
+            'data-pc-section': 'root',
+            value,  // Set the initial value
+            oninput: (e) => {
+                const newValue = e.target.value;
+                setter(newValue);  // Call the setter to update the value
+            },
+            ...attrs  // Allow for additional attributes (e.g., placeholder, maxlength, etc.)
+        });
+
+        // Append the text input to the wrapper div
+        wrapperDiv.appendChild(textInput);
+
+        return wrapperDiv;
+    }
+
 }
 
 class CustomSettingTypes {
@@ -342,12 +378,6 @@ class CustomSettingTypes {
                 flexDirection: 'column',
             }
         });
-
-        // Clear any existing settings before rendering new ones
-        groupContainer.innerHTML = '';
-        if (toggleButton) {
-            groupContainer.appendChild(toggleButton);  // Re-append the toggle button if collapsible
-        }
         const renderedSettings = [];
         // Dynamically render each setting and append to the container
         settings.forEach(setting => {
@@ -404,16 +434,12 @@ class CustomSettingTypes {
 
         // Ensure that the container is visible
         requestAnimationFrame(() => {
+            settingsContainer.style.display = 'flex';
             const parent = groupContainer.parentElement;
             if (parent != null) {
                 parent.style.display = 'contents';
             }
         });
-
-        renderedSettings
-            .sort((a, b) => a.name.localeCompare(b.name))
-            .map((s) => s.render())
-            .filter(Boolean)
 
         return groupContainer;
     }
@@ -541,7 +567,7 @@ export class SettingsHelper {
             }
         },
         TEXT() {
-            return { type: 'text' }
+            return { type: GroupTypes.textSetting }
         },
         MULTILINE() {
             return { type: CustomSettingTypes.multilineSetting }
