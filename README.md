@@ -27,7 +27,7 @@ const uiHelper = new UiHelper();
 
 ## Adding Settings
 
-You can define a dict of settings and pass it to the `addSetting()` method. The setting must define properties such as `name`, `category`, `defaultValue`, `type`, and an optional `tooltip` and `onChange` handler. The function automatically generates the settings id.
+You can define a dict of settings and pass it to the `addSetting()` method. The setting must define properties such as `name`, `category`, `defaultValue`, `type`, and an optional `tooltip` and `onChange` handler. The function automatically generates the settings id, but you can manually pass in an id if you want to. For adding multiple settings at the same time, see the [examples](#examples).
 
 The category is built like this: `[Main Name, Category Name, Setting Name]`. `Main Name` is the name seen on the left and is often the name of your extension, `Category Name` is the category the the setting is sorted into and `Setting Name` is not seen.
 
