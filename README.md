@@ -183,6 +183,58 @@ WARNING: "warn",
 ERROR: "error",
 ```
 
+## Node Context Menu
+
+You can use the `registerContextMenu(nodeType, menuItem, insertIndex)` method to add to the context menu of a node. `nodeType` is the name of the node, for example `Load Checkpoint`. `menuItem` is a dictionary, see below for more details. `insertIndex` is either an int or a function that returns an int, it will decide where in the context menu the menu item is placed.
+
+```js
+uiHelper.registerContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.aboveOption("Title"));
+```
+
+There are preset insert functions found in `UiHelper.PresetInsertIndex`.
+
+```js
+aboveOption(optionContent, occurrence)
+underOption(optionContent, occurrence)
+atEnd()
+atStart()
+```
+
+### Context Menu Items
+
+You can easily create a context menu item with the `createContextMenuItem()` method. It simply returns a dictionary that looks like this:
+
+```js
+// With function
+const menuItem = uiHelper.createContextMenuItem("example", false, () => console.log("example"));
+// Witout function
+const menuItem = {
+    content: "example",
+    disabled: false,
+    callback: () => console.log("example"),
+};
+```
+
+If you want to create a group of items, where the user has to open the group to see all the options you can use the `createContextMenuGroup()` method. It is also really simple and just looks like this:
+
+```js
+// With function
+const menuGroup = uiHelper.createContextMenuGroup("Example", menuItem1, menuItem2, menuItem3)
+// Witout function
+const menuGroup = {
+    content: "Example",
+    disabled: false,
+    has_submenu: true,
+    submenu:  {
+        options: [
+            menuItem1,
+            menuItem2,
+            menuItem3,
+        ]
+    }
+};
+```
+
 # Examples
 
 <details>
