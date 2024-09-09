@@ -1,7 +1,208 @@
 // Stupid amount of backtracking to make sure we get to the root.
 import { app } from '../../../../../../../../../../../../../../../../scripts/app.js';
 import { api } from '../../../../../../../../../../../../../../../../scripts/api.js';
-import { $el } from '../../../../../../../../../../../../../../../../scripts/ui.js'
+import { $el } from '../../../../../../../../../../../../../../../../scripts/ui.js';
+
+class GroupTypes {
+    static booleanSetting(name, setter, value, attrs) {
+        const htmlID = CustomSettingTypes.generateHtmlID(name);
+
+        const wrapperDiv = $el('div', {
+            className: 'setting-input',
+            style: {
+                flex: '1',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                marginLeft: '1rem',
+            }
+        });
+
+        // Create the main toggle switch container div
+        const toggleSwitchContainer = $el('div', {
+            id: htmlID,
+            className: `p-toggleswitch p-component ${value ? 'p-toggleswitch-checked' : ''}`,
+            style: { position: 'relative' }, // Use an object for the style property
+            'data-pc-name': 'toggleswitch',
+            'data-pc-section': 'root',
+            'data-p-checked': value.toString(),
+            'data-p-disabled': 'false'
+        });
+
+        // Create the checkbox input
+        const checkboxInput = $el('input', {
+            type: 'checkbox',
+            role: 'switch',
+            className: 'p-toggleswitch-input',
+            checked: value,
+            'aria-checked': value.toString(),
+            'data-pc-section': 'input',
+            onchange: (e) => {
+                const isChecked = e.target.checked;
+                setter(isChecked); // Update the setting with the new value
+                toggleSwitchContainer.classList.toggle('p-toggleswitch-checked', isChecked); // Toggle the class for visual feedback
+                toggleSwitchContainer.setAttribute('data-p-checked', isChecked.toString()); // Update the `data-p-checked` attribute
+            },
+            ...attrs
+        });
+
+        // Create the slider span element
+        const sliderSpan = $el('span', {
+            className: 'p-toggleswitch-slider',
+            'data-pc-section': 'slider'
+        });
+
+        // Append the input and slider to the container
+        toggleSwitchContainer.appendChild(checkboxInput);
+        toggleSwitchContainer.appendChild(sliderSpan);
+
+        wrapperDiv.appendChild(toggleSwitchContainer);
+        return wrapperDiv;
+    }
+
+    static sliderSetting(name, setter, value, { min = 0, max = 100, step = 1 } = {}, attrs) {
+        const htmlID = CustomSettingTypes.generateHtmlID(name);
+
+        // Create the wrapper div with the class 'setting-input'
+        const wrapperDiv = $el('div', {
+            className: 'setting-input',
+            style: {
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                gap: '10px' // Space between slider and number input
+            }
+        });
+
+        // Create the slider container div
+        const sliderContainer = $el('div', {
+            id: htmlID,
+            className: 'input-slider',
+            style: {
+                flexGrow: '1',
+                position: 'relative'
+            }
+        });
+
+        // Create the slider component (div with spans for range and handle)
+        const sliderComponent = $el('div', {
+            className: 'p-slider p-component p-slider-horizontal slider-part',
+            'data-pc-name': 'slider',
+            'data-pc-section': 'root',
+            style: { width: '100%', position: 'relative' }
+        });
+
+        // Create the slider range span (visual range of slider)
+        const sliderRange = $el('span', {
+            className: 'p-slider-range',
+            'data-pc-section': 'range',
+            style: {
+                position: 'absolute',
+                width: `${((value - min) / (max - min)) * 100}%`
+            }  // Set the width based on value
+        });
+
+        // Create the slider handle span (visual handle of the slider)
+        const sliderHandle = $el('span', {
+            className: 'p-slider-handle',
+            tabindex: '0',
+            role: 'slider',
+            'aria-valuemin': min.toString(),
+            'aria-valuenow': value.toString(),
+            'aria-valuemax': max.toString(),
+            'aria-orientation': 'horizontal',
+            'data-pc-section': 'handle',
+            style: {
+                position: 'absolute',
+                left: `${((value - min) / (max - min)) * 100}%`
+            }  // Set the initial position of the handle based on the value
+        });
+
+        // Make the slider handle draggable
+        const startDrag = (event) => {
+            const sliderWidth = sliderComponent.offsetWidth;
+            const updateValue = (event) => {
+                const clientX = event.clientX || event.touches[0].clientX;
+                const rect = sliderComponent.getBoundingClientRect();
+                let newValue = ((clientX - rect.left) / sliderWidth) * (max - min) + min;
+                newValue = Math.max(min, Math.min(max, Math.round(newValue / step) * step));  // Ensure it's within range and respects step
+                setter(newValue);  // Call the setter to update the value
+                sliderHandle.style.left = `${((newValue - min) / (max - min)) * 100}%`;  // Update slider handle position
+                sliderRange.style.width = `${((newValue - min) / (max - min)) * 100}%`;  // Update slider range width
+                numberInput.value = newValue.toString();  // Sync number input
+                rangeInput.value = newValue.toString();  // Sync hidden range input
+            };
+
+            const stopDrag = () => {
+                document.removeEventListener('mousemove', updateValue);
+                document.removeEventListener('touchmove', updateValue);
+                document.removeEventListener('mouseup', stopDrag);
+                document.removeEventListener('touchend', stopDrag);
+            };
+
+            document.addEventListener('mousemove', updateValue);
+            document.addEventListener('touchmove', updateValue);
+            document.addEventListener('mouseup', stopDrag);
+            document.addEventListener('touchend', stopDrag);
+        };
+
+        sliderHandle.addEventListener('mousedown', startDrag);
+        sliderHandle.addEventListener('touchstart', startDrag);
+
+        // Create the range input (hidden, will control the slider)
+        const rangeInput = $el('input', {
+            type: 'range',
+            min,
+            max,
+            step,
+            value,
+            style: { display: 'none' },  // Hidden input to control the slider
+            oninput: (e) => {
+                const newValue = parseInt(e.target.value, 10);
+                setter(newValue); // Call the setter to update the value
+                // Update slider visuals
+                sliderHandle.style.left = `${((newValue - min) / (max - min)) * 100}%`;
+                sliderRange.style.width = `${((newValue - min) / (max - min)) * 100}%`;
+                numberInput.value = newValue.toString();  // Sync number input
+            },
+            ...attrs
+        });
+
+        // Append the range input, slider range, and handle to the slider component
+        sliderComponent.appendChild(sliderRange);
+        sliderComponent.appendChild(sliderHandle);
+        sliderContainer.appendChild(sliderComponent);
+        sliderContainer.appendChild(rangeInput);  // Hidden range input
+
+        // Create the number input component
+        const numberInput = $el('input', {
+            type: 'text',
+            className: 'p-inputtext p-component p-inputnumber-input',
+            role: 'spinbutton',
+            'aria-valuemin': min.toString(),
+            'aria-valuemax': max.toString(),
+            'aria-valuenow': value.toString(),
+            inputmode: 'numeric',
+            value: value.toString(),
+            style: { width: '60px', textAlign: 'left' },  // Adjust width and alignment
+            oninput: (e) => {
+                const newValue = parseInt(e.target.value, 10);
+                if (!isNaN(newValue) && newValue >= min && newValue <= max) {
+                    setter(newValue);
+                    // Update slider visuals
+                    sliderHandle.style.left = `${((newValue - min) / (max - min)) * 100}%`;
+                    sliderRange.style.width = `${((newValue - min) / (max - min)) * 100}%`;
+                    rangeInput.value = newValue.toString();  // Sync hidden range input
+                }
+            }
+        });
+
+        // Append the slider container and number input to the wrapper div
+        wrapperDiv.appendChild(sliderContainer);
+        wrapperDiv.appendChild(numberInput);
+
+        return wrapperDiv;
+    }
+}
 
 class CustomSettingTypes {
     static generateHtmlID(name) {
@@ -95,6 +296,127 @@ class CustomSettingTypes {
 
         return colorInput;
     }
+
+    static groupSetting(name, setter, value, attrs) {
+        const htmlID = CustomSettingTypes.generateHtmlID(name);
+        const settings = attrs.settings;
+        const collapsible = attrs.collapsible;
+        console.log(app.ui.settings.textElement)
+
+        // Create a container element for the group
+        const groupContainer = $el('div', {
+            id: htmlID,
+            style: {
+                flexGrow: '1',
+            }
+        });
+
+        // If collapsible, add a button to collapse/expand
+        let toggleButton;
+        if (collapsible) {
+            toggleButton = $el('button', {
+                textContent: `Toggle ${name}`,
+                className: "p-inputtext",
+                style: {
+                    marginBottom: '10px',
+                    width: '100%',
+                    cursor: 'pointer',
+                },
+                onclick: () => {
+                    settingsContainer.style.display = settingsContainer.style.display === 'none' ? 'flex' : 'none';
+                    toggleButton.style.marginBottom = toggleButton.style.marginBottom === '10px' ? '0px' : '10px';
+                    setTimeout(() => {
+                        toggleButton.blur();
+                    }, 100);
+                }
+            });
+            groupContainer.appendChild(toggleButton);
+        }
+
+        // Create the settings container for grouping the settings DOM elements
+        let settingsContainer = $el('div', {
+            id: 'GroupContainer',
+            style: {
+                display: 'flex',
+                gap: '10px',
+                flexDirection: 'column',
+            }
+        });
+
+        // Clear any existing settings before rendering new ones
+        groupContainer.innerHTML = '';
+        if (toggleButton) {
+            groupContainer.appendChild(toggleButton);  // Re-append the toggle button if collapsible
+        }
+        const renderedSettings = [];
+        // Dynamically render each setting and append to the container
+        settings.forEach(setting => {
+            const renderedSetting = app.ui.settings.settingsLookup[setting.id].render(); // Dynamically render the setting
+            renderedSettings.push(app.ui.settings.settingsLookup[setting.id]);
+
+            // Create a wrapper div for the label and setting element
+            const settingWrapper = $el('div', {
+                style: {
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '10px'
+                }
+            });
+
+            // Create the label element
+            const label = $el('label', {
+                textContent: setting.name,
+                className: 'setting-label',
+                style: {
+                    flexBasis: '30%',
+                    pointer: 'text',
+                }
+            });
+
+            // Append the label and rendered setting element to the wrapper
+            settingWrapper.appendChild(label);
+            settingWrapper.appendChild(renderedSetting);
+
+            // Ensure layout is correct based on type
+            if (typeof setting.type.type === 'function') {
+                renderedSetting.style.flexBasis = '70%';
+                renderedSetting.style.marginLeft = '10px';
+                settingsContainer.appendChild(settingWrapper);
+            } else {
+                settingsContainer.appendChild(renderedSetting);
+            }
+
+            // Optionally hide original setting element if required
+            const originalSettingElement = document.getElementById(setting.id);
+            if (originalSettingElement) {
+                originalSettingElement.parentElement.parentElement.style.display = 'none';
+            }
+
+            // Ensure the setting wrapper is visible
+            requestAnimationFrame(() => {
+                settingWrapper.style.display = 'flex';
+            });
+        });
+
+        // Append the settings container to the group container
+        groupContainer.appendChild(settingsContainer);
+
+        // Ensure that the container is visible
+        requestAnimationFrame(() => {
+            const parent = groupContainer.parentElement;
+            if (parent != null) {
+                parent.style.display = 'contents';
+            }
+        });
+
+        renderedSettings
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((s) => s.render())
+            .filter(Boolean)
+
+        return groupContainer;
+    }
 }
 
 /**
@@ -127,6 +449,8 @@ export class SettingsHelper {
             prefix += ".";
         }
         this.prefix = prefix;
+
+        SettingsHelper.SettingsType.GROUP = SettingsHelper.SettingsType.GROUP.bind(this);
         SettingsHelper.PresetOnChange.reloadSettings = SettingsHelper.PresetOnChange.reloadSettings.bind(this);
         SettingsHelper.debouncedSendEvent = this.debounce((details) => {
             const event = new CustomEvent(this.prefix + 'reloadSettings', {
@@ -181,11 +505,51 @@ export class SettingsHelper {
         COLORPICKER() {
             return { type: CustomSettingTypes.colorPickerSetting }
         },
+        GROUP(name, settings, collapsible = false) {
+            settings.forEach(setting => {
+                this.addSetting(setting);
+            });
+
+            return {
+                type: CustomSettingTypes.groupSetting,
+                attrs: { name: name, settings: settings, collapsible: collapsible },
+            }
+        },
         HIDDEN() {
             return { type: 'hidden' }
         },
     };
     static ST = SettingsHelper.SettingsType;
+
+    static GroupTypes = {
+        BOOLEAN() {
+            return { type: GroupTypes.booleanSetting }
+        },
+        NUMBER() {
+            return { type: 'number' }
+        },
+        SLIDER(min, max, step) {
+            return {
+                type: GroupTypes.sliderSetting,
+                attrs: { min: min, max: max, step: step },
+            }
+        },
+        COMBO(...options) {
+            return {
+                type: GroupTypes.comboSetting,
+                attrs: { options }
+            }
+        },
+        TEXT() {
+            return { type: 'text' }
+        },
+        MULTILINE() {
+            return { type: CustomSettingTypes.multilineSetting }
+        },
+        COLORPICKER() {
+            return { type: CustomSettingTypes.colorPickerSetting }
+        },
+    }
 
     /**
      * A collection of preset onChange functions for common settings use cases.
