@@ -591,7 +591,7 @@ export class UiHelper {
         },
 
         /**
-         * Find the index just below a given option string in the menu by calling aboveOption.
+         * Find the index just below a given option string in the menu.  The dividers are `null`.
          * @param {*} optionContent - The content to search for (can be a string or null).
          * @param {number} occurrence - The occurrence number to find (default is 1 for the first occurrence).
          * @returns {function} A function that takes options and returns the index just after the matching option.
