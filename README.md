@@ -1,13 +1,14 @@
 # ComfyUI Helper
 
-This project provides a helper class `SettingsHelper` and `UiHelper` to streamline handling settings and UI interactions in ComfyUI extensions.
+This project provides two helper classes, `SettingsHelper` and `UiHelper` to streamline handling settings and UI interactions in ComfyUI extensions.
 
 ## Features
 - Easily add and manage settings for ComfyUI.
+- Automatically handle default settings.
 - Extensively documented methods.
-- Settings can be of type `BOOLEAN`, `NUMBER`, `SLIDER`, `COMBO`, `TEXT`, `MULTILINE`, or `HIDDEN`.
+- Some custom setting types.
 - Easily triggers events when settings are changed.
-- Provides debounced event handling.
+- Easily add to a nodes Context Menu.
 
 ![Settings](https://i.imgur.com/RqoMTvf.png)
 
@@ -54,8 +55,10 @@ NUMBER(),
 SLIDER(min, max, step),
 COMBO(...options),
 TEXT(),
-MULTILINE(), // Multiline is not an official setting type.
 HIDDEN(),
+// Custom setting types.
+MULTILINE(),
+COLORPICKER(),
 ```
 
 ### Setting id

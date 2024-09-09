@@ -4,9 +4,13 @@ import { api } from '../../../../../../../../../../../../../../../../scripts/api
 import { $el } from '../../../../../../../../../../../../../../../../scripts/ui.js'
 
 class CustomSettingTypes {
+    static generateHtmlID(name) {
+        return `${name.replaceAll(' ', '').replaceAll('[', '').replaceAll(']', '-')}`
+    }
+
     static multilineSetting(name, setter, value, attrs) {
         // Ensure that tooltip has a default value if not provided
-        const htmlID = `${name.replaceAll(' ', '').replaceAll('[', '').replaceAll(']', '-')}`;
+        const htmlID = CustomSettingTypes.generateHtmlID(name);
 
         // Create the textarea element
         const textarea = $el('textarea', {
@@ -14,6 +18,7 @@ class CustomSettingTypes {
             id: htmlID,
             oninput: (e) => {
                 adjustHeight();
+                console.log(e.target.value)
             },
             className: "p-inputtext",
             style: {
@@ -57,6 +62,38 @@ class CustomSettingTypes {
 
         adjustHeight();
         return textarea;
+    }
+
+    static colorPickerSetting(name, setter, value, attrs) {
+        const htmlID = CustomSettingTypes.generateHtmlID(name);
+
+        // Create the color input element
+        const colorInput = $el('input', {
+            type: 'color',
+            value,  // Pre-set the value of the color picker
+            id: htmlID,
+            className: "p-inputtext",
+            onchange: (e) => {
+                const newColor = e.target.value;
+                setter(newColor);
+            },
+            ...attrs
+        });
+
+        // Styling or additional setup if necessary
+        colorInput.style.height = '40px';
+        colorInput.style.cursor = 'pointer';
+        colorInput.style.flexGrow = '1';
+        colorInput.style.padding = '3px 5px'
+
+        requestAnimationFrame(() => {
+            const parent = colorInput.parentElement;
+            if (parent != null) {
+                parent.style.display = 'contents'
+            }
+        });
+
+        return colorInput;
     }
 }
 
@@ -140,6 +177,9 @@ export class SettingsHelper {
         },
         MULTILINE() {
             return { type: CustomSettingTypes.multilineSetting }
+        },
+        COLORPICKER() {
+            return { type: CustomSettingTypes.colorPickerSetting }
         },
         HIDDEN() {
             return { type: 'hidden' }
