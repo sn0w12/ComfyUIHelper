@@ -46,7 +46,7 @@ settingsHelper.addSetting({
 
 The examples id would be `example.boolean`, where `example` is the prefix we provide when we create the `SettingsHelper` and boolean is the slugified `name`.
 
-Use `SettingsHelper.SettingsType` to get a list of all usable types:
+Use `SettingsHelper.SettingsType` to get a list of all usable types, you can also use the shortcut `SettingsHelper.ST`:
 
 ```js
 BOOLEAN(),
@@ -79,7 +79,7 @@ settingsHelper.addReloadSettingsListener(onSettingsReload);
 
 ### Event Details
 
-You can also send information with the `reloadSettings()`:
+You can also send information with the `reloadSettings()`, PC is a shortcut to `PresetOnChange`:
 
 ```js
 const setting = {
@@ -87,8 +87,8 @@ const setting = {
     category: ["Example", "Example", "Boolean"],
     defaultValue: true,
     tooltip: "This is a boolean setting",
-    type: SettingsHelper.SettingsType.BOOLEAN,
-    onChange: () => SettingsHelper.PresetOnChange.reloadSettings(setting), // Send this setting in the event
+    type: SettingsHelper.ST.BOOLEAN,
+    onChange: () => SettingsHelper.PC.reloadSettings(setting), // Send this setting in the event
 };
 
 settingsHelper.addSetting(setting);
@@ -174,7 +174,7 @@ uiHelper.addToast(
 );
 ```
 
-Use `UiHelper.Severity` to get a list of all usable severities:
+Use `UiHelper.Severity` or `UiHelper.S` to get a list of all usable severities:
 
 ```js
 SUCCESS: "success",
@@ -191,7 +191,7 @@ You can use the `addContextMenu(nodeType, menuItem, insertIndex)` method to add 
 uiHelper.addContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.aboveOption("Title"));
 ```
 
-There are preset insert functions found in `UiHelper.PresetInsertIndex`.
+There are preset insert functions found in `UiHelper.PresetInsertIndex` or `UiHelper.PI`.
 
 ```js
 aboveOption(optionContent, occurrence)

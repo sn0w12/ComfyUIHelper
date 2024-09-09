@@ -145,6 +145,7 @@ export class SettingsHelper {
             return { type: 'hidden' }
         },
     };
+    static ST = SettingsHelper.SettingsType;
 
     /**
      * A collection of preset onChange functions for common settings use cases.
@@ -186,6 +187,7 @@ export class SettingsHelper {
             }
         }
     };
+    static PC = SettingsHelper.PresetOnChange;
 
     #slugify(str) {
         str = str.replace(/^\s+|\s+$/g, ''); // trim leading/trailing white space
@@ -517,6 +519,7 @@ export class UiHelper {
         WARNING: "warn",
         ERROR: "error",
     }
+    static S = UiHelper.Severity;
 
     /**
      * Create a popup in the top right. If you don't include life it will stay until the user removes it.
@@ -626,6 +629,7 @@ export class UiHelper {
             };
         }
     };
+    static PI = UiHelper.PresetInsertIndex;
 
     #registerContextMenu(name, nodeType, menuItem, insertIndex) {
         app.registerExtension({
