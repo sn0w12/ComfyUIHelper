@@ -660,10 +660,10 @@ export class UiHelper {
      * @example
      * const menuItem = uiHelper.createContextMenuItem("example", false, () => console.log("example"));
      *
-     * uiHelper.registerContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.aboveOption("Title"));
-     * uiHelper.registerContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.underOption(null, 2));
+     * uiHelper.addContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.aboveOption("Title"));
+     * uiHelper.addContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.underOption(null, 2));
      */
-    registerContextMenu(nodeType, menuItem, insertIndex) {
+    addContextMenu(nodeType, menuItem, insertIndex) {
         let baseName = nodeType + ".contextMenu";
         let name = baseName;
         let counter = 1;

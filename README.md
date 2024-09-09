@@ -185,10 +185,10 @@ ERROR: "error",
 
 ## Node Context Menu
 
-You can use the `registerContextMenu(nodeType, menuItem, insertIndex)` method to add to the context menu of a node. `nodeType` is the name of the node, for example `Load Checkpoint`. `menuItem` is a dictionary, see below for more details. `insertIndex` is either an int or a function that returns an int, it will decide where in the context menu the menu item is placed.
+You can use the `addContextMenu(nodeType, menuItem, insertIndex)` method to add to the context menu of a node. `nodeType` is the name of the node, for example `Load Checkpoint`. `menuItem` is a dictionary, see below for more details. `insertIndex` is either an int or a function that returns an int, it will decide where in the context menu the menu item is placed.
 
 ```js
-uiHelper.registerContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.aboveOption("Title"));
+uiHelper.addContextMenu("Example Node", menuItem, UiHelper.PresetInsertIndex.aboveOption("Title"));
 ```
 
 There are preset insert functions found in `UiHelper.PresetInsertIndex`.
