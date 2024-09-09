@@ -91,7 +91,7 @@ export class SettingsHelper {
         }
         this.prefix = prefix;
         //SettingsHelper.PresetOnChange.reloadSettings = SettingsHelper.PresetOnChange.reloadSettings.bind(this);
-        this.debouncedSendEvent = this.debounce((details) => {
+        SettingsHelper.debouncedSendEvent = this.debounce((details) => {
             const event = new CustomEvent(this.prefix + 'reloadSettings', {
                 detail: {
                     ...details,
@@ -182,7 +182,7 @@ export class SettingsHelper {
                 SettingsHelper.debouncedEvents[id](details);
             } else {
                 // Fallback to the global debounce if no id is provided
-                this.debouncedSendEvent(details);
+                SettingsHelper.debouncedSendEvent(details);
             }
         }
     };
@@ -228,8 +228,9 @@ export class SettingsHelper {
      *   category: ['Example', 'Visual', 'Dark Mode'],
      *   type: SettingsHelper.SettingsType.BOOLEAN,
      *   defaultValue: false,
-     *   onChange: () => {
-     *     console.log("Dark Mode changed:");
+     *   onChange: (newValue, oldValue) => {
+     *       console.log('New Value:', newValue);
+     *       console.log('Old Value:', oldValue);
      *   },
      *   tooltip: "Toggle dark mode for the UI."
      * });
@@ -247,8 +248,9 @@ export class SettingsHelper {
      *   type: SettingsHelper.SettingsType.COMBO,
      *   defaultValue: "Light",
      *   options: settingsHelper.createSettingOptions({ text: "Light", value: "light" }, "Dark"),
-     *   onChange: () => {
-     *     console.log("Theme changed:");
+     *   onChange: (newValue, oldValue) => {
+     *       console.log('New Value:', newValue);
+     *       console.log('Old Value:', oldValue);
      *   },
      *   tooltip: "Choose a UI theme."
      * });

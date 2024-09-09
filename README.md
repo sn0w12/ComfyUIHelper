@@ -40,7 +40,7 @@ settingsHelper.addSetting({
     defaultValue: true,
     tooltip: "This is a boolean setting",
     type: SettingsHelper.SettingsType.BOOLEAN,
-    onChange: () => SettingsHelper.PresetOnChange.reloadSettings(),
+    onChange: (newValue, oldValue) => SettingsHelper.PresetOnChange.reloadSettings(),
 });
 ```
 
