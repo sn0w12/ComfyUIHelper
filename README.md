@@ -10,7 +10,7 @@ This project provides two helper classes, `SettingsHelper` and `UiHelper` to str
 - Easily triggers events when settings are changed.
 - Easily add to a nodes Context Menu.
 
-![Settings](https://i.imgur.com/RqoMTvf.png)
+![Settings](https://i.imgur.com/APT6UV6.png)
 
 ## Installation
 Either download the latest [release](https://github.com/sn0w12/ComfyUIHelper/releases/latest) or clone the repository.
