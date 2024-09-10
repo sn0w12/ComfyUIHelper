@@ -103,6 +103,8 @@ class CustomSettingTypes {
             style: {
                 width: '100%',
                 cursor: 'pointer',
+                minHeight: '36px',
+                minWidth: '200px',
             },
             onclick: () => {
                 attrs.onclick();
@@ -171,6 +173,17 @@ export class SettingsHelper {
 
     /**
      * Enum-like object for valid setting types.
+     * @example
+     * BOOLEAN(),
+     * NUMBER(),
+     * SLIDER(min, max, step),
+     * COMBO(...options),
+     * TEXT(),
+     * HIDDEN(),
+     * // Custom setting types.
+     * MULTILINE(),
+     * COLORPICKER(),
+     * BUTTON(text, onclick),
      */
     static SettingsType = {
         BOOLEAN() {
