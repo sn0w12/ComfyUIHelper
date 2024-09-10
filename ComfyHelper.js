@@ -51,7 +51,7 @@ class CustomSettingTypes {
 
                 let height = scrollHeight;
                 if (lines > maxLines) {
-                    height = (((scrollHeight - offset) / lines)) * maxLines + offset;
+                    height = ((scrollHeight - offset) / lines) * maxLines + offset;
                 }
                 textarea.setAttribute('style', `width: 100%; height: ${height + 3}px; resize: none;`);
 
