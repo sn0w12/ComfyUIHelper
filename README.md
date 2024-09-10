@@ -239,6 +239,14 @@ const menuGroup = {
 };
 ```
 
+## Small Functions
+
+Get the users frontend version method:
+
+```js
+uiHelper.getComfyVersion();
+```
+
 # Examples
 
 <details>
