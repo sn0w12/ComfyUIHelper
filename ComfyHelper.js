@@ -306,7 +306,7 @@ class CustomSettingTypes {
             id: htmlID,
             oninput: (e) => {
                 adjustHeight();
-                console.log(e.target.value)
+                setter(e.target.value);
             },
             className: "p-inputtext",
             style: {
@@ -323,14 +323,6 @@ class CustomSettingTypes {
                 const parentDiv = textarea.parentElement;
                 if (parentDiv != null) {
                     parentDiv.style.width = "100%";
-
-                    const id = parentDiv.id;
-                    if (id != null) {
-                        const currentValue = api.getSetting(id);
-                        if (currentValue != textarea.value) {
-                            api.storeSetting(id, textarea.value);
-                        }
-                    }
                 }
 
                 textarea.style.height = ''; // Allow to shrink
@@ -388,7 +380,6 @@ class CustomSettingTypes {
         const htmlID = CustomSettingTypes.generateHtmlID(name);
         const settings = attrs.settings;
         const collapsible = attrs.collapsible;
-        console.log(app.ui.settings.textElement)
 
         // Create a container element for the group
         const groupContainer = $el('div', {
@@ -402,7 +393,7 @@ class CustomSettingTypes {
         let toggleButton;
         if (collapsible) {
             toggleButton = $el('button', {
-                textContent: `Toggle ${name}`,
+                textContent: `Close ${name}`,
                 className: "p-inputtext",
                 style: {
                     marginBottom: '10px',
@@ -412,6 +403,7 @@ class CustomSettingTypes {
                 onclick: () => {
                     settingsContainer.style.display = settingsContainer.style.display === 'none' ? 'flex' : 'none';
                     toggleButton.style.marginBottom = toggleButton.style.marginBottom === '10px' ? '0px' : '10px';
+                    toggleButton.textContent = toggleButton.textContent === `Close ${name}` ? `Open ${name}` : `Close ${name}`;
                     setTimeout(() => {
                         toggleButton.blur();
                     }, 100);
@@ -421,7 +413,7 @@ class CustomSettingTypes {
         }
 
         // Create the settings container for grouping the settings DOM elements
-        let settingsContainer = $el('div', {
+        const settingsContainer = $el('div', {
             id: 'GroupContainer',
             style: {
                 display: 'flex',
@@ -429,11 +421,12 @@ class CustomSettingTypes {
                 flexDirection: 'column',
             }
         });
-        const renderedSettings = [];
+
         // Dynamically render each setting and append to the container
         settings.forEach(setting => {
             const renderedSetting = app.ui.settings.settingsLookup[setting.id].render(); // Dynamically render the setting
-            renderedSettings.push(app.ui.settings.settingsLookup[setting.id]);
+            renderedSetting.style.flexBasis = '70%';
+            renderedSetting.style.marginLeft = '10px';
 
             // Create a wrapper div for the label and setting element
             const settingWrapper = $el('div', {
@@ -458,17 +451,8 @@ class CustomSettingTypes {
             // Append the label and rendered setting element to the wrapper
             settingWrapper.appendChild(label);
             settingWrapper.appendChild(renderedSetting);
+            settingsContainer.appendChild(settingWrapper);
 
-            // Ensure layout is correct based on type
-            if (typeof setting.type.type === 'function') {
-                renderedSetting.style.flexBasis = '70%';
-                renderedSetting.style.marginLeft = '10px';
-                settingsContainer.appendChild(settingWrapper);
-            } else {
-                settingsContainer.appendChild(renderedSetting);
-            }
-
-            // Optionally hide original setting element if required
             const originalSettingElement = document.getElementById(setting.id);
             if (originalSettingElement) {
                 originalSettingElement.parentElement.parentElement.style.display = 'none';
@@ -489,6 +473,7 @@ class CustomSettingTypes {
             const parent = groupContainer.parentElement;
             if (parent != null) {
                 parent.style.display = 'contents';
+                parent.parentElement.style.flexBasis = '30%';
             }
         });
 
