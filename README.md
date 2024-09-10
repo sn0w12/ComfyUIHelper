@@ -59,6 +59,7 @@ HIDDEN(),
 // Custom setting types.
 MULTILINE(),
 COLORPICKER(),
+BUTTON(text, onclick),
 ```
 
 ### Setting id
@@ -297,6 +298,21 @@ const settingsDefinitions = [
         tooltip: "This is a slider setting",
         type: SettingsHelper.SettingsType.SLIDER(0, 100, 1),
         onChange: () => SettingsHelper.PresetOnChange.reloadSettings(settingsDefinitions[5]), // Send this setting in the event
+    },
+    {
+        name: "Color",
+        category: ["Example", "Example 2", "Color"],
+        defaultValue: "#FFFFFF",
+        tooltip: "This is a color setting",
+        type: SettingsHelper.ST.COLORPICKER,
+        onChange: (newValue, oldValue) => SettingsHelper.PC.reloadSettings(),
+    },
+    {
+        name: "Button",
+        category: ["Example", "Example 2", "Button"],
+        tooltip: "This is a button setting",
+        type: SettingsHelper.ST.BUTTON("Example", () => console.log("clicked")),
+        onChange: (newValue, oldValue) => SettingsHelper.PC.reloadSettings(),
     },
 ]
 settingsHelper.addSettings(settingsDefinitions);
