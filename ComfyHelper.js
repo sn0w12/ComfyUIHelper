@@ -589,6 +589,13 @@ export class UiHelper {
     }
 
     /**
+     * @returns {string} Returns the version of the frontend.
+     */
+    getComfyVersion() {
+        return window["__COMFYUI_FRONTEND_VERSION__"];
+    }
+
+    /**
      * Enum-like object for valid severity levels.
      */
     static Severity = {
