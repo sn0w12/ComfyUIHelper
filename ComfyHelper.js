@@ -95,6 +95,25 @@ class CustomSettingTypes {
 
         return colorInput;
     }
+
+    static buttonSetting(name, setter, value, attrs) {
+        const button = $el('button', {
+            textContent: attrs.text,
+            className: "p-inputtext",
+            style: {
+                width: '100%',
+                cursor: 'pointer',
+            },
+            onclick: () => {
+                attrs.onclick();
+                setTimeout(() => {
+                    button.blur();
+                }, 25);
+            }
+        });
+
+        return button;
+    }
 }
 
 /**
@@ -180,6 +199,12 @@ export class SettingsHelper {
         },
         COLORPICKER() {
             return { type: CustomSettingTypes.colorPickerSetting }
+        },
+        BUTTON(text, onclick) {
+            return {
+                type: CustomSettingTypes.buttonSetting,
+                attrs: { text: text, onclick: onclick }
+            }
         },
         HIDDEN() {
             return { type: 'hidden' }
