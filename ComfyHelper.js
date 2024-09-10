@@ -417,7 +417,6 @@ class CustomSettingTypes {
             id: 'GroupContainer',
             style: {
                 display: 'flex',
-                gap: '10px',
                 flexDirection: 'column',
             }
         });
