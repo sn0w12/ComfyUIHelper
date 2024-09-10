@@ -18,17 +18,17 @@ class CustomSettingTypes {
             id: htmlID,
             oninput: (e) => {
                 adjustHeight();
-                console.log(e.target.value)
             },
             className: "p-inputtext",
             style: {
                 width: "100%",
                 resize: "none",
             },
-            ...attrs
         });
 
-        const maxLines = 10;
+        const maxLines = attrs.maxHeight;
+        const offset = 16;
+        let lastHeight = 0;
 
         const adjustHeight = () => {
             requestAnimationFrame(() => {
@@ -46,17 +46,21 @@ class CustomSettingTypes {
                 }
 
                 textarea.style.height = ''; // Allow to shrink
+                const scrollHeight = textarea.scrollHeight;
                 const lines = textarea.value.split('\n').length;
-                const scrollHeight = textarea.scrollHeight + 3;
+
+                let height = scrollHeight;
                 if (lines > maxLines) {
-                    const height = (scrollHeight / lines) * maxLines
-                    textarea.setAttribute(
-                        'style',
-                        `width: 100%; height: ${height}px; resize: none;`
-                    );
-                    return;
+                    height = (((scrollHeight - offset) / lines)) * maxLines + offset;
                 }
-                textarea.setAttribute('style', `width: 100%; height: ${scrollHeight}px; resize: none;`);
+                textarea.setAttribute('style', `width: 100%; height: ${height + 3}px; resize: none;`);
+
+                if (scrollHeight !== lastHeight) {
+                    if (scrollHeight > lastHeight) {
+                        textarea.scrollTop = textarea.scrollHeight; // Scroll to bottom
+                    }
+                    lastHeight = scrollHeight;
+                }
             });
         };
 
@@ -181,7 +185,7 @@ export class SettingsHelper {
      * TEXT(),
      * HIDDEN(),
      * // Custom setting types.
-     * MULTILINE(),
+     * MULTILINE(maxLines?),
      * COLORPICKER(),
      * BUTTON(text, onclick),
      */
@@ -207,8 +211,11 @@ export class SettingsHelper {
         TEXT() {
             return { type: 'text' }
         },
-        MULTILINE() {
-            return { type: CustomSettingTypes.multilineSetting }
+        MULTILINE(maxLines = 10) {
+            return {
+                type: CustomSettingTypes.multilineSetting,
+                attrs: { maxHeight: maxLines },
+            }
         },
         COLORPICKER() {
             return { type: CustomSettingTypes.colorPickerSetting }

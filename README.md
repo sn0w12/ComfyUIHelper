@@ -57,7 +57,7 @@ COMBO(...options),
 TEXT(),
 HIDDEN(),
 // Custom setting types.
-MULTILINE(),
+MULTILINE(maxLines?), // maxLines optional
 COLORPICKER(),
 BUTTON(text, onclick),
 ```
