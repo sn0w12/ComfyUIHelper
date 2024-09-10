@@ -312,7 +312,6 @@ const settingsDefinitions = [
         category: ["Example", "Example 2", "Button"],
         tooltip: "This is a button setting",
         type: SettingsHelper.ST.BUTTON("Example", () => console.log("clicked")),
-        onChange: (newValue, oldValue) => SettingsHelper.PC.reloadSettings(),
     },
 ]
 settingsHelper.addSettings(settingsDefinitions);
