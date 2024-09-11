@@ -146,11 +146,34 @@ export class SettingsHelper {
      * const settingsHelper = new SettingsHelper("example");
      */
     constructor(prefix) {
-        if (!prefix.endsWith(".")) {
-            prefix += ".";
-        }
-        this.prefix = prefix;
-        SettingsHelper.PresetOnChange.reloadSettings = SettingsHelper.PresetOnChange.reloadSettings.bind(this);
+        this.prefix = this.#formatPrefix(prefix);
+        this.#bindEvents();
+        this.#initializeDebouncedSendEvent();
+        SettingsHelper.debouncedEvents = {};
+
+        this.uiHelper = new UiHelper();
+        this.#initialize();
+    }
+
+    /**
+     * Ensures the prefix ends with a dot.
+     */
+    #formatPrefix(prefix) {
+        return prefix.endsWith(".") ? prefix : `${prefix}.`;
+    }
+
+    /**
+     * Binds necessary event handlers.
+     */
+    #bindEvents() {
+        SettingsHelper.PresetOnChange.reloadSettings =
+            SettingsHelper.PresetOnChange.reloadSettings.bind(this);
+    }
+
+    /**
+     * Initializes debounced send event functionality.
+     */
+    #initializeDebouncedSendEvent() {
         SettingsHelper.debouncedSendEvent = this.debounce((details) => {
             const event = new CustomEvent(this.prefix + 'reloadSettings', {
                 detail: {
@@ -160,11 +183,6 @@ export class SettingsHelper {
             });
             window.dispatchEvent(event);
         }, 250);
-
-        SettingsHelper.debouncedEvents = {};
-
-        this.uiHelper = new UiHelper();
-        this.#initialize();
     }
 
     async #initialize() {
