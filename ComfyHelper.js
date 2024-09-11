@@ -194,12 +194,22 @@ export class SettingsHelper {
         NUMBER() {
             return { type: 'number' }
         },
+        /**
+         * @param {number} min - The minimum number.
+         * @param {number} max - The maximum number.
+         * @param {number} step - The step to take when increasing or decreasing.
+         */
         SLIDER(min, max, step) {
             return {
                 type: 'slider',
                 attrs: { min: min, max: max, step: step },
             }
         },
+        /**
+         * @param  {...any} options - A text value map of the options in the combo.
+         * @example
+         * COMBO({ text: "Combo 1", value: "combo1" }, { text: "Combo 2", value: "combo2" })
+         */
         COMBO(...options) {
             return {
                 type: 'combo',
@@ -209,6 +219,9 @@ export class SettingsHelper {
         TEXT() {
             return { type: 'text' }
         },
+        /**
+         * @param {*} maxLines - The maximum amount of lines to appear before limiting the height of the setting.
+         */
         MULTILINE(maxLines = 10) {
             return {
                 type: CustomSettingTypes.multilineSetting,
@@ -218,6 +231,10 @@ export class SettingsHelper {
         COLORPICKER() {
             return { type: CustomSettingTypes.colorPickerSetting }
         },
+        /**
+         * @param {string} text - The text on the button.
+         * @param {function} onclick - What happens when the user clicks the button.
+         */
         BUTTON(text, onclick) {
             return {
                 type: CustomSettingTypes.buttonSetting,
