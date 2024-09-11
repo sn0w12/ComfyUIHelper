@@ -38,10 +38,7 @@ class CustomSettingTypes {
 
                     const id = parentDiv.id;
                     if (id != null) {
-                        const currentValue = api.getSetting(id);
-                        if (currentValue != textarea.value) {
-                            api.storeSetting(id, textarea.value);
-                        }
+                        api.storeSetting(id, textarea.value);
                     }
                 }
 
