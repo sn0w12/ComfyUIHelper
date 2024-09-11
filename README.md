@@ -1,16 +1,16 @@
 # ComfyUI Helper
 
-This project provides two helper classes, `SettingsHelper` and `UiHelper` to streamline handling settings and UI interactions in ComfyUI extensions.
+This project offers two core classes, `SettingsHelper` and `UiHelper`, designed to simplify and enhance the handling of settings and user interface interactions in ComfyUI extensions. These helpers provide structured management for settings and UI elements while also offering customizable features to extend ComfyUI's capabilities.
 
 ## Features
-- Easily add and manage settings for ComfyUI.
-- Automatically handle default settings.
-- Extensively documented methods.
-- Some custom setting types.
-- Easily triggers events when settings are changed.
-- Easily add to a nodes Context Menu.
+- **Streamlined settings management:** Add and manage settings easily with a consistent structure.
+- **Automatic default handling:** Ensures settings are initialized with default values where necessary.
+- **Custom setting types:** Introduce specialized setting types, such as color pickers, buttons, and multiline text.
+- **Event-driven updates:** Optionally trigger events when settings change.
+- **Enhanced UI interaction:** Easily extend ComfyUI's context menus and interface elements.
 
-![Settings](https://i.imgur.com/APT6UV6.png)
+<img src="https://i.imgur.com/ALfampV.png" alt="Settings" style="border-radius: 12px;">
+
 
 ## Installation
 Either download the latest [release](https://github.com/sn0w12/ComfyUIHelper/releases/latest) or clone the repository.
