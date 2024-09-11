@@ -136,6 +136,7 @@ export class SettingsHelper {
      * All ComfyUI settings.
      */
     static allSettings;
+    static settingsIdMap = {};
     static debouncedEvents = {};
 
     /**
@@ -343,6 +344,8 @@ export class SettingsHelper {
         if (!settingDict.id) {
             settingDict.id = this.#generateId(settingDict.name);
         }
+        SettingsHelper.settingsIdMap[settingDict.name] = settingDict.id;
+
         const settingDefinition = {
             ...settingDict,
             // Check if 'type' is a function, and only call it if it is
@@ -418,16 +421,25 @@ export class SettingsHelper {
     }
 
     /**
-     * Returns the id of a setting.
-     * @param {string} name
-     * @returns
+     * Get the id of a setting.
+     * @param {string} name - The name or the id of a setting added by settingsHelper.
+     * @returns The id of the setting if it exists or null if it doesn't find any.
      */
     getSettingId(name) {
-        if (SettingsHelper.defaultSettings[name] == undefined && !SettingsHelper.allSettings.hasOwnProperty(name)) {
-            name = this.#generateId(name);
+        // Check if the "name" exists as a key in the settingsIdMap
+        if (SettingsHelper.settingsIdMap.hasOwnProperty(name)) {
+            return SettingsHelper.settingsIdMap[name];
         }
 
-        return name;
+        // Check if the "name" is a value for any key in the settingsIdMap
+        for (let key in SettingsHelper.settingsIdMap) {
+            if (SettingsHelper.settingsIdMap[key] === name) {
+                return name;
+            }
+        }
+
+        // If neither condition is met, return null
+        return null;
     }
 
     /**
