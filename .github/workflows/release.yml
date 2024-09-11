@@ -1,0 +1,31 @@
+name: Release ComfyHelper.js
+
+on:
+  push:
+    tags:
+      - "v*" # This triggers the workflow on version tags like v1.0, v1.1, etc.
+  workflow_dispatch: # Allows manually triggering the action
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Extract tag name
+        id: extract_tag
+        run: echo "TAG_NAME=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ComfyHelper.js # Your JS file that needs to be included in the release
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.TAG_NAME }}
+          name: Release ${{ env.TAG_NAME }}
+          body: "Automated release of the ComfyHelper.js file."
