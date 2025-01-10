@@ -1,11 +1,15 @@
 // Stupid amount of backtracking to make sure we get to the root.
-import { app } from '../../../../../../../../../../../../../../../../scripts/app.js';
-import { api } from '../../../../../../../../../../../../../../../../scripts/api.js';
-import { $el } from '../../../../../../../../../../../../../../../../scripts/ui.js'
+import { app } from "../../../../../../../../../../../../../../../../scripts/app.js";
+import { api } from "../../../../../../../../../../../../../../../../scripts/api.js";
+import { $el } from "../../../../../../../../../../../../../../../../scripts/ui.js";
 
+export const settingsHelpers = {};
 class CustomSettingTypes {
     static generateHtmlID(name) {
-        return `${name.replaceAll(' ', '').replaceAll('[', '').replaceAll(']', '-')}`
+        return `${name
+            .replaceAll(" ", "")
+            .replaceAll("[", "")
+            .replaceAll("]", "-")}`;
     }
 
     static multilineSetting(name, setter, value, attrs) {
@@ -13,7 +17,7 @@ class CustomSettingTypes {
         const htmlID = CustomSettingTypes.generateHtmlID(name);
 
         // Create the textarea element
-        const textarea = $el('textarea', {
+        const textarea = $el("textarea", {
             value,
             id: htmlID,
             oninput: (e) => {
@@ -42,15 +46,19 @@ class CustomSettingTypes {
                     }
                 }
 
-                textarea.style.height = ''; // Allow to shrink
+                textarea.style.height = ""; // Allow to shrink
                 const scrollHeight = textarea.scrollHeight;
-                const lines = textarea.value.split('\n').length;
+                const lines = textarea.value.split("\n").length;
 
                 let height = scrollHeight;
                 if (lines > maxLines) {
-                    height = ((scrollHeight - offset) / lines) * maxLines + offset;
+                    height =
+                        ((scrollHeight - offset) / lines) * maxLines + offset;
                 }
-                textarea.setAttribute('style', `width: 100%; height: ${height + 3}px; resize: none;`);
+                textarea.setAttribute(
+                    "style",
+                    `width: 100%; height: ${height + 3}px; resize: none;`
+                );
 
                 if (scrollHeight !== lastHeight) {
                     if (scrollHeight > lastHeight) {
@@ -69,28 +77,28 @@ class CustomSettingTypes {
         const htmlID = CustomSettingTypes.generateHtmlID(name);
 
         // Create the color input element
-        const colorInput = $el('input', {
-            type: 'color',
-            value,  // Pre-set the value of the color picker
+        const colorInput = $el("input", {
+            type: "color",
+            value, // Pre-set the value of the color picker
             id: htmlID,
             className: "p-inputtext",
             onchange: (e) => {
                 const newColor = e.target.value;
                 setter(newColor);
             },
-            ...attrs
+            ...attrs,
         });
 
         // Styling or additional setup if necessary
-        colorInput.style.height = '40px';
-        colorInput.style.cursor = 'pointer';
-        colorInput.style.flexGrow = '1';
-        colorInput.style.padding = '3px 5px'
+        colorInput.style.height = "40px";
+        colorInput.style.cursor = "pointer";
+        colorInput.style.flexGrow = "1";
+        colorInput.style.padding = "3px 5px";
 
         requestAnimationFrame(() => {
             const parent = colorInput.parentElement;
             if (parent != null) {
-                parent.style.display = 'contents'
+                parent.style.display = "contents";
             }
         });
 
@@ -98,21 +106,21 @@ class CustomSettingTypes {
     }
 
     static buttonSetting(name, setter, value, attrs) {
-        const button = $el('button', {
+        const button = $el("button", {
             textContent: attrs.text,
             className: "p-inputtext",
             style: {
-                width: '100%',
-                cursor: 'pointer',
-                minHeight: '36px',
-                minWidth: '200px',
+                width: "100%",
+                cursor: "pointer",
+                minHeight: "36px",
+                minWidth: "200px",
             },
             onclick: () => {
                 attrs.onclick();
                 setTimeout(() => {
                     button.blur();
                 }, 25);
-            }
+            },
         });
 
         return button;
@@ -153,6 +161,8 @@ export class SettingsHelper {
 
         this.uiHelper = new UiHelper();
         this.#initialize();
+
+        settingsHelpers[prefix] = this;
     }
 
     /**
@@ -175,11 +185,11 @@ export class SettingsHelper {
      */
     #initializeDebouncedSendEvent() {
         SettingsHelper.debouncedSendEvent = this.debounce((details) => {
-            const event = new CustomEvent(this.prefix + 'reloadSettings', {
+            const event = new CustomEvent(this.prefix + "reloadSettings", {
                 detail: {
                     ...details,
                     eventSrc: "global",
-                }
+                },
             });
             window.dispatchEvent(event);
         }, 250);
@@ -207,10 +217,10 @@ export class SettingsHelper {
      */
     static SettingsType = {
         BOOLEAN() {
-            return { type: 'boolean' }
+            return { type: "boolean" };
         },
         NUMBER() {
-            return { type: 'number' }
+            return { type: "number" };
         },
         /**
          * @param {number} min - The minimum number.
@@ -219,9 +229,9 @@ export class SettingsHelper {
          */
         SLIDER(min, max, step) {
             return {
-                type: 'slider',
+                type: "slider",
                 attrs: { min: min, max: max, step: step },
-            }
+            };
         },
         /**
          * @param  {...any} options - A text value map of the options in the combo.
@@ -230,12 +240,12 @@ export class SettingsHelper {
          */
         COMBO(...options) {
             return {
-                type: 'combo',
+                type: "combo",
                 options: options,
-            }
+            };
         },
         TEXT() {
-            return { type: 'text' }
+            return { type: "text" };
         },
         /**
          * @param {*} maxLines - The maximum amount of lines to appear before limiting the height of the setting.
@@ -244,10 +254,10 @@ export class SettingsHelper {
             return {
                 type: CustomSettingTypes.multilineSetting,
                 attrs: { maxHeight: maxLines },
-            }
+            };
         },
         COLORPICKER() {
-            return { type: CustomSettingTypes.colorPickerSetting }
+            return { type: CustomSettingTypes.colorPickerSetting };
         },
         /**
          * @param {string} text - The text on the button.
@@ -256,11 +266,11 @@ export class SettingsHelper {
         BUTTON(text, onclick) {
             return {
                 type: CustomSettingTypes.buttonSetting,
-                attrs: { text: text, onclick: onclick }
-            }
+                attrs: { text: text, onclick: onclick },
+            };
         },
         HIDDEN() {
-            return { type: 'hidden' }
+            return { type: "hidden" };
         },
     };
     static ST = SettingsHelper.SettingsType;
@@ -286,15 +296,21 @@ export class SettingsHelper {
                 // Check if there's already a debounced function for this id
                 if (!SettingsHelper.debouncedEvents[id]) {
                     // Create a debounced function for this id if it doesn't exist
-                    SettingsHelper.debouncedEvents[id] = this.debounce((details) => {
-                        const event = new CustomEvent(this.prefix + 'reloadSettings', {
-                            detail: {
-                                ...details,
-                                eventSrc: "individual",
-                            },
-                        });
-                        window.dispatchEvent(event);
-                    }, 250);
+                    SettingsHelper.debouncedEvents[id] = this.debounce(
+                        (details) => {
+                            const event = new CustomEvent(
+                                this.prefix + "reloadSettings",
+                                {
+                                    detail: {
+                                        ...details,
+                                        eventSrc: "individual",
+                                    },
+                                }
+                            );
+                            window.dispatchEvent(event);
+                        },
+                        250
+                    );
                 }
 
                 // Call the debounced function for this specific id
@@ -303,16 +319,17 @@ export class SettingsHelper {
                 // Fallback to the global debounce if no id is provided
                 SettingsHelper.debouncedSendEvent(details);
             }
-        }
+        },
     };
     static PC = SettingsHelper.PresetOnChange;
 
     #slugify(str) {
-        str = str.replace(/^\s+|\s+$/g, ''); // trim leading/trailing white space
+        str = str.replace(/^\s+|\s+$/g, ""); // trim leading/trailing white space
         str = str.toLowerCase(); // convert string to lowercase
-        str = str.replace(/[^a-z0-9 -]/g, '') // remove any non-alphanumeric characters
-                 .replace(/\s+/g, '-') // replace spaces with hyphens
-                 .replace(/-+/g, '-'); // remove consecutive hyphens
+        str = str
+            .replace(/[^a-z0-9 -]/g, "") // remove any non-alphanumeric characters
+            .replace(/\s+/g, "-") // replace spaces with hyphens
+            .replace(/-+/g, "-"); // remove consecutive hyphens
         return str;
     }
 
@@ -330,7 +347,7 @@ export class SettingsHelper {
             },
         };
         app.registerExtension(extension);
-    };
+    }
 
     /**
      * Adds a new setting.
@@ -384,9 +401,12 @@ export class SettingsHelper {
         const settingDefinition = {
             ...settingDict,
             // Check if 'type' is a function, and only call it if it is
-            ...(typeof settingDict.type === 'function' ? settingDict.type() : settingDict.type),
+            ...(typeof settingDict.type === "function"
+                ? settingDict.type()
+                : settingDict.type),
         };
-        SettingsHelper.defaultSettings[settingDict.id] = settingDict.defaultValue;
+        SettingsHelper.defaultSettings[settingDict.id] =
+            settingDict.defaultValue;
         this.#registerSetting(settingDefinition);
     }
 
@@ -424,17 +444,19 @@ export class SettingsHelper {
      * @returns {Array<Object>} An array of option objects.
      */
     createSettingOptions(...options) {
-        return options.map(option =>
-            typeof option === 'string' ? { text: option, value: option } : option
+        return options.map((option) =>
+            typeof option === "string"
+                ? { text: option, value: option }
+                : option
         );
     }
 
     async #fetchApi(route, options = {}) {
-		if (!options.headers) {
-			options.headers = {};
-		}
+        if (!options.headers) {
+            options.headers = {};
+        }
 
-        options.cache = 'no-store';
+        options.cache = "no-store";
 
         try {
             const response = await fetch(route, options);
@@ -444,7 +466,10 @@ export class SettingsHelper {
             const data = await response.json();
             return data;
         } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error(
+                "There was a problem with the fetch operation:",
+                error
+            );
             return null;
         }
     }
@@ -525,9 +550,10 @@ export class SettingsHelper {
         const settingsMap = settings.reduce((map, setting) => {
             const settingName = this.getSettingId(setting);
 
-            map[setting] = allSettings[settingName] !== undefined
-                ? allSettings[settingName]
-                : SettingsHelper.defaultSettings[settingName];
+            map[setting] =
+                allSettings[settingName] !== undefined
+                    ? allSettings[settingName]
+                    : SettingsHelper.defaultSettings[settingName];
 
             return map;
         }, {});
@@ -550,7 +576,7 @@ export class SettingsHelper {
      * @param {function} callback - The function to run when the reloadSettings event is triggered.
      */
     addReloadSettingsListener(callback) {
-        const eventName = this.prefix + 'reloadSettings';
+        const eventName = this.prefix + "reloadSettings";
 
         window.addEventListener(eventName, (event) => {
             callback(event);
@@ -585,16 +611,16 @@ export class SettingsHelper {
         let timeout;
         let lastCallTime = 0;
 
-        return function(...args) {
+        return function (...args) {
             const now = Date.now();
 
             // If the last call was longer ago than the wait period, reset the timeout
             if (now - lastCallTime > wait) {
                 lastCallTime = now;
-                func.apply(this, args);  // Call the function immediately
+                func.apply(this, args); // Call the function immediately
             }
 
-            clearTimeout(timeout);  // Clear any previous timeout
+            clearTimeout(timeout); // Clear any previous timeout
 
             // Set a new timeout that will reset `lastCallTime` after the wait period
             timeout = setTimeout(() => {
@@ -654,7 +680,7 @@ export class UiHelper {
         INFO: "info",
         WARNING: "warn",
         ERROR: "error",
-    }
+    };
     static S = UiHelper.Severity;
 
     /**
@@ -677,7 +703,7 @@ export class UiHelper {
             summary: title,
             detail: detail,
             life: life,
-        })
+        });
     }
 
     addSideBarTab(id, icon, title, tooltip, type, render) {
@@ -718,7 +744,11 @@ export class UiHelper {
                     }
 
                     // Case 2: If optionContent is a string, compare it with option.content (if option is not null)
-                    if (option && option.content && option.content === optionContent) {
+                    if (
+                        option &&
+                        option.content &&
+                        option.content === optionContent
+                    ) {
                         matchCount++;
                         if (matchCount === occurrence) {
                             return i;
@@ -739,7 +769,10 @@ export class UiHelper {
          */
         underOption(optionContent, occurrence = 1) {
             return function (options) {
-                const indexAbove = UiHelper.PresetInsertIndex.aboveOption(optionContent, occurrence)(options);
+                const indexAbove = UiHelper.PresetInsertIndex.aboveOption(
+                    optionContent,
+                    occurrence
+                )(options);
                 // Return the index after the found index, or -1 if no match is found (which appends to the end)
                 return indexAbove !== -1 ? indexAbove + 1 : -1;
             };
@@ -763,7 +796,7 @@ export class UiHelper {
             return function (options) {
                 return 0; // Insert at the start (index 0)
             };
-        }
+        },
     };
     static PI = UiHelper.PresetInsertIndex;
 
@@ -771,12 +804,19 @@ export class UiHelper {
         app.registerExtension({
             name,
             async setup() {
-                const original_getNodeMenuOptions = app.canvas.getNodeMenuOptions;
+                const original_getNodeMenuOptions =
+                    app.canvas.getNodeMenuOptions;
                 app.canvas.getNodeMenuOptions = function (node) {
-                    const options = original_getNodeMenuOptions.apply(this, arguments);
+                    const options = original_getNodeMenuOptions.apply(
+                        this,
+                        arguments
+                    );
 
                     if (node.type === nodeType) {
-                        let index = (typeof insertIndex === 'function') ? insertIndex(options, node) : insertIndex;
+                        let index =
+                            typeof insertIndex === "function"
+                                ? insertIndex(options, node)
+                                : insertIndex;
 
                         if (index !== -1) {
                             options.splice(index, 0, menuItem);
@@ -835,8 +875,8 @@ export class UiHelper {
         return {
             content: content,
             disabled: disabled,
-            callback: callback
-        }
+            callback: callback,
+        };
     }
 
     /**
@@ -851,9 +891,9 @@ export class UiHelper {
             content: name,
             disabled: false,
             has_submenu: true,
-            submenu:  {
-                options: menuItems
-            }
-        }
+            submenu: {
+                options: menuItems,
+            },
+        };
     }
 }
